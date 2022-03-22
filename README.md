@@ -1,27 +1,48 @@
 # Reci.py
-Reci.py is a webapp that allows people to create & share precise recipes by the tracking equipment, appliances used to make a recipe, cooking techniques, ingredients and more.
+
+Reci.py allows people to create & share precise recipes by the tracking
+equipment and appliances used to make a recipe, cooking techniques, and more.
 
 ![](mock.png)
-# How to run
-Reci.py is going to be a django project, which makes it very easy to get it up and running accross different devices. Once the repo is cloned and all the required libraries (e.g. Django) locally run the following command:
+### Preparation/dependencies
 
-```
-python3 manage.py runserver
-```
+>>>> Note, I'm pretty sure the scaffold tool below only runs on Linux or Mac. Windows compat coming soon.
 
-This will deploy the website locally, which can be seen at http://localhost:8000.
+You'll need to install:
 
-# How to contribute
-Follow this project board to know the latest status of the project: [https://trello.com/b/xPMXr6HA/recipy]([https://trello.com/b/xPMXr6HA/recipy])  
+- A reasonably current version of Python3 & pip3 (NOT 2!!!! This to run orchestration code)
+- Docker
 
-### How to build
-- Use this github repository: [https://github.com/cis3296s22/04-recipy](https://github.com/cis3296s22/04-recipy)
-    - The main branch will will be the working directory
-    - Different branches will have the most up to date with different features 
-- There is no requirements on the IDE or text editor used.
-- The following libraries/frameworks are required:
-    - Django 
-    - Node.js
-    - React.js
-- Follow the *How to run* section to run the webapp
-    - To view the webapp, go to any browser and go to localhost:8000, once the webapp has be run.
+Many developers have both of these things already installed, and most POSIX-based environments have python3 installed.
+
+Once you've verified that you have the dependencies installed, do one of these in the project root:
+
+`pip install -e .`
+
+or
+
+`pip install .`
+
+The -e means use the source directory as the target installation directory. This has
+the effect of allowing you to edit the code while the package is installed. You
+might also need to use sudo to install the package systemwide or use `pip3` instead of `pip` (in the case of having both python2 and python3 installed).
+
+### Running
+
+    scaffold recipy --uploads_dir /path/to/where/uploads/will/be/stored
+                    --srcroot /path/to/directory/around/module/
+
+If you're running in the srcroot, just run:
+
+    scaffold recipy
+
+If you're running for the first time, you might need to include the `---rebuild` argument. This is just a kludge that will be fixed in later versions.
+
+    scaffold recipy --rebuild
+
+Now go to http://localhost:8000/ to see the webapp. It should just be a blank page with "ok" in it.
+
+
+### Contributing
+
+Submit a pull request.

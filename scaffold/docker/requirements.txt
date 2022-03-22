@@ -1,0 +1,23 @@
+# Notice how there are no versions specified?
+# This is to default to the latest version,
+# but allow application requirements.txt's
+# to specify specific version.
+
+asgiref
+Django
+gevent
+greenlet
+gunicorn
+protlib
+psycopg2
+pytz
+pyzmq
+sqlparse
+watchgod
+whitenoise
+zmq
+zope.event
+zope.interface
+Pillow
+psycogreen
+

@@ -1,7 +1,7 @@
 # Reci.py
 Reci.py is a webapp that allows people to create & share precise recipes by the tracking equipment, appliances used to make a recipe, cooking techniques, ingredients and more.
 
-![mock.png]()
+![](mock.png)
 # How to run
 Reci.py is going to be a django project, which makes it very easy to get it up and running accross different devices. Once the repo is cloned and all the required libraries (e.g. Django) locally run the following command:
 

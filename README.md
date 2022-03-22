@@ -1,28 +1,27 @@
-# Project Name
-Put here a short paragraph describing your project. 
-Adding an screenshot or a mockup of your application in action would be nice.  
+# Reci.py
+Reci.py is a webapp that allows people to create & share precise recipes by the tracking equipment, appliances used to make a recipe, cooking techniques, ingredients and more.
 
-![This is a screenshot.](images.png)
+![](mock.png)
 # How to run
-Provide here instructions on how to use your application.   
-- Download the latest binary from the Release section on the right on GitHub.  
-- On the command line uncompress using
+Reci.py is going to be a django project, which makes it very easy to get it up and running accross different devices. Once the repo is cloned and all the required libraries (e.g. Django) locally run the following command:
+
 ```
-tar -xzf  
+python3 manage.py runserver
 ```
-- On the command line run with
-```
-./hello
-```
-- You will see Hello World! on your terminal. 
+
+This will deploy the website locally, which can be seen at http://localhost:8000.
 
 # How to contribute
-Follow this project board to know the latest status of the project: [http://...]([http://...])  
+Follow this project board to know the latest status of the project: [https://trello.com/b/xPMXr6HA/recipy]([https://trello.com/b/xPMXr6HA/recipy])  
 
 ### How to build
-- Use this github repository: ... 
-- Specify what branch to use for a more stable release or for cutting edge development.  
-- Use InteliJ 11
-- Specify additional library to download if needed 
-- What file and target to compile and run. 
-- What is expected to happen when the app start. 
+- Use this github repository: [https://github.com/cis3296s22/04-recipy](https://github.com/cis3296s22/04-recipy)
+    - The main branch will will be the working directory
+    - Different branches will have the most up to date with different features 
+- There is no requirements on the IDE or text editor used.
+- The following libraries/frameworks are required:
+    - Django 
+    - Node.js
+    - React.js
+- Follow the *How to run* section to run the webapp
+    - To view the webapp, go to any browser and go to localhost:8000, once the webapp has be run.

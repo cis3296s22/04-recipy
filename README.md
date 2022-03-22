@@ -3,6 +3,7 @@
 Reci.py allows people to create & share precise recipes by the tracking
 equipment and appliances used to make a recipe, cooking techniques, and more.
 
+![](mock.png)
 ### Preparation/dependencies
 
 >>>> Note, I'm pretty sure the scaffold tool below only runs on Linux or Mac. Windows compat coming soon.
@@ -45,4 +46,3 @@ Now go to http://localhost:8000/ to see the webapp. It should just be a blank pa
 ### Contributing
 
 Submit a pull request.
-

@@ -6,7 +6,7 @@ equipment and appliances used to make a recipe, cooking techniques, and more.
 ![](mock.png)
 ### Preparation/dependencies
 
->>>> Note, I'm pretty sure the scaffold tool below only runs on Linux or Mac. Windows compat coming soon.
+>>>> Note, I'm pretty sure the scaffold tool below only runs on Linux or Mac. Windows compatibility coming soon.
 
 You'll need to install:
 
@@ -25,7 +25,7 @@ or
 
 The -e means use the source directory as the target installation directory. This has
 the effect of allowing you to edit the code while the package is installed. You
-might also need to use sudo to install the package systemwide or use `pip3` instead of `pip` (in the case of having both python2 and python3 installed).
+might also need to use sudo to install the package system wide or use `pip3` instead of `pip` (in the case of having both python2 and python3 installed).
 
 ### Running
 

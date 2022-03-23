@@ -38,21 +38,15 @@ def run_local(slug='app', # module to run in srcroot
               srcroot='.',
               rebuild=False,
               postgres=True):
-
     srcroot = os.path.abspath(srcroot)
 
     d = DockerfileGenerator(srcroot=srcroot, slug=slug)
-
-    if rebuild:
-        d.build()
 
     args = [
         "docker", "images",
         "--format", "{{.CreatedAt}}\t{{.ID}}",
         "--filter", "reference=" + d.repository
     ]
-
-    print(args)
 
     (out, err, rc) = run_cmd(args, capture_output=True)
 
@@ -66,12 +60,16 @@ def run_local(slug='app', # module to run in srcroot
     # - Take the first one
 
     img_id = sorted([y.split('\t', 1) for y in out.split('\n')], key=lambda x: x[0])[::-1]
-    print(out)
     if img_id:
         img_id = img_id[0]
 
-        if img_id:
+        if img_id and len(img_id) > 1:
             img_id = img_id[1]
+        else:
+            img_id = None
+
+    if rebuild or not img_id:
+        d.build()
 
     network_name = 'jazz-local-network'
 

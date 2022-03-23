@@ -36,10 +36,6 @@ If you're running in the srcroot, just run:
 
     scaffold recipy
 
-If you're running for the first time, you might need to include the `---rebuild` argument. This is just a kludge that will be fixed in later versions.
-
-    scaffold recipy --rebuild
-
 Now go to http://localhost:8000/ to see the webapp. It should just be a blank page with "ok" in it.
 
 

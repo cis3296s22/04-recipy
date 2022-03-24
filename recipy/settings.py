@@ -9,3 +9,5 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages'
 ]
+
+AUTH_USER_MODEL = 'recipy.Chef'

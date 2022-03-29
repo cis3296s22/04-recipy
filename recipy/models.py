@@ -26,15 +26,15 @@ class Ingredient(BaseModel):
     name = models.TextField()
 
 class Step(BaseModel):
-    class TimeUnit(Models.IntegerChoices):
+    class TimeUnit(models.IntegerChoices):
         SECOND = 1, 'Second'
         MINUTE = 2, 'Minutes'
-        HOUR = 2, "Hours"
-        DAY = 3, "Days"
+        HOUR = 3, "Hours"
+        DAY = 4, "Days"
 
     recipe = models.ForeignKey(Recipe, on_delete=models.CASCADE)
-    ingredients = models.ManyToMany(Ingredient)
-    equipment = models.ManyToMany(Equipment)
+    ingredients = models.ManyToManyField(Ingredient)
+    equipment = models.ManyToManyField(Equipment)
     time = models.FloatField()
     time_units = models.IntegerField(
         choices=TimeUnit.choices,

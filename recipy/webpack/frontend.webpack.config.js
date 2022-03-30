@@ -3,9 +3,8 @@ const ESLintPlugin = require('eslint-webpack-plugin');
 
 module.exports = {
   entry: {
-      index: path.resolve('jsx/index.jsx')
-//    viewer: path.resolve('jsx/viewer_index.jsx'),
-//    editor: path.resolve('jsx/editor_index.jsx')
+      index: path.resolve('jsx/index.jsx'),
+      recipe: path.resolve('jsx/recipe.jsx')
   },
   module: {
     rules: [

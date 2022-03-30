@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+
+{% load static %}
+
+{% block title %}Some Recipe{% endblock %}
+
+{% block head %}
+
+{% endblock %}
+
+{% block content %}
+    <div id='tour-viewer'></div>
+    <script type='application/javascript'>
+    //<![CDATA[
+    window._json = '{{ json|safe|escapejs }}';
+    //]]>
+    </script>
+{% endblock %}
+
+{% block scripts %}
+    <script src="{% static 'recipy/recipe.js' %}"></script>
+{% endblock %}

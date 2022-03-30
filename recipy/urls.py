@@ -7,6 +7,7 @@ from django.conf.urls.static import static
 
 urlpatterns = [
     path('', views.index, name=settings.LOGIN_REDIRECT_URL),
+    path('recipe', views.view_recipe),
     path('accounts/', include('django.contrib.auth.urls')),
     static(settings.MEDIA_URL,
            document_root=settings.MEDIA_ROOT)

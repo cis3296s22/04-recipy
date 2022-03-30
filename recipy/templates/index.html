@@ -1,8 +1,104 @@
-<html>
-    <head>
-        <title>Reci.py</title>
-    </head>
-    <body>
-        <p>ok</p>
-    </body>
-</html>
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Home{% endblock %}
+
+{% block head %}
+    <style>   
+        .post {
+            position: relative;
+            width: 50%;
+            height: 300px;
+            margin-left: 25%;
+            margin-right: 25%;
+            margin-top: 25px;
+            margin-bottom: 25px;
+        }
+    
+        .postImgContainer {
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 40%;
+            box-sizing: border-box; 
+        }
+    
+        .postContentContainer {
+            position: absolute;
+            top: 0; 
+            right: 0;  
+            bottom: 0; 
+            width: 60%; 
+            box-sizing: border-box; 
+            outline: 1px solid black;
+        }
+        
+        .postImg {
+            width: 100%;
+            height: 100%;
+        }
+
+        .postContentContainer {
+            padding: 20px;
+        }
+        
+        .postTitle {
+            font-size: 64px;
+            margin-bottom: 5px;
+            margin-top: 25px;
+        }
+
+        .postDesc {
+            font-size: 28px;
+            margin-top: 30px;
+        }
+    </style>
+{% endblock %}
+
+{% block content %}
+    <div class="post">
+        <div class="postImgContainer"><img src="{% static 'pasta.png' %}" class="postImg"></div>
+        <div class="postContentContainer">
+            <h1 class="postTitle"> Pasta </h1>
+            <span class="postUser"> Some User </span>
+            <p class="postDesc"> Simple Pasta to eat when one is hungry! </p>
+        </div>
+    </div>
+
+    <div class="post">
+        <div class="postImgContainer"><img src="{% static 'pasta.png' %}" class="postImg"></div>
+        <div class="postContentContainer">
+            <h1 class="postTitle"> Pasta </h1>
+            <span class="postUser"> Some User </span>
+            <p class="postDesc"> Simple Pasta to eat when one is hungry! </p>
+        </div>
+    </div>
+
+    <div class="post">
+        <div class="postImgContainer"><img src="{% static 'pasta.png' %}" class="postImg"></div>
+        <div class="postContentContainer">
+            <h1 class="postTitle"> Pasta </h1>
+            <span class="postUser"> Some User </span>
+            <p class="postDesc"> Simple Pasta to eat when one is hungry! </p>
+        </div>
+    </div>
+
+    <div class="post">
+        <div class="postImgContainer"><img src="{% static 'pasta.png' %}" class="postImg"></div>
+        <div class="postContentContainer">
+            <h1 class="postTitle"> Pasta </h1>
+            <span class="postUser"> Some User </span>
+            <p class="postDesc"> Simple Pasta to eat when one is hungry! </p>
+        </div>
+    </div>
+
+    <div class="post">
+        <div class="postImgContainer"><img src="{% static 'pasta.png' %}" class="postImg"></div>
+        <div class="postContentContainer">
+            <h1 class="postTitle"> Pasta </h1>
+            <span class="postUser"> Some User </span>
+            <p class="postDesc"> Simple Pasta to eat when one is hungry! </p>
+        </div>
+    </div>
+{% endblock %}

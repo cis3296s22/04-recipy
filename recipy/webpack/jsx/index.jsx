@@ -1,4 +1,7 @@
 import './polyfills';
+import ReactDOM from 'react-dom';
+import React from 'react';
+import Homepage from './Homepage.jsx';
 
 /*
   - Recipe edit/create
@@ -9,3 +12,10 @@ import './polyfills';
       - like instagram homepage
 
 */
+
+const App = () => {
+  return <Homepage />;
+}
+
+console.log("Hello world");
+ReactDOM.render(<App />, document.getElementById('root'));

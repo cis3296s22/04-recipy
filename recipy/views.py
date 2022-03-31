@@ -10,3 +10,5 @@ def view_recipe(request, tour_id=None):
         "json": json.dumps({"foo": "bar"})
     }))
 
+def userprofile(request):
+    return HttpResponse(render_to_string('userprofile.html',{}))

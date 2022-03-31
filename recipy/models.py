@@ -75,6 +75,7 @@ class Ingredient(BaseModel):
         ML = 3, 'Milliliters'
         L = 4, 'Liters'
         SPCH = 5, 'Pinches'
+        UNIT = 6, 'Unit'
         
     name = models.TextField(null=False)
     calories = models.IntegerField(null=False)
@@ -120,10 +121,10 @@ class Step(BaseModel):
             process=self.process.to_json() if self.process else None,
             time=self.time,
             time_units=self.time_units,
-            ingredients=[i.to_json() for x in IngredientUsage.objects.filter(step=self)]
+            ingredients=[x.to_json() for x in IngredientUsage.objects.filter(step=self)]
         )
 
-class IntegredientUsage(BaseModel):
+class IngredientUsage(BaseModel):
     step = models.ForeignKey(Step, on_delete=models.DO_NOTHING)
     ingredient = models.ForeignKey(Ingredient, on_delete=models.DO_NOTHING)
     amount = models.IntegerField()

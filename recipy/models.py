@@ -52,12 +52,18 @@ class Recipe(BaseModel):
     owner = models.ForeignKey(Chef, on_delete=models.CASCADE, null=False)
     name = models.TextField()
     description = models.TextField()
+    makes = models.IntegerField(default=1, null=False)
+    active_time = models.IntegerField(null=True)
+    passive_time = models.IntegerField(null=True)
 
     def to_json(self):
         return dict(
             owner=self.owner.to_json(),
             name=self.name,
             description=self.description,
+            makes=self.makes,
+            active_time=self.active_time,
+            passive_time=self.passive_time,
             steps=[s.to_json() for s in Step.objects.filter(recipe_id=self.id)]
         )
 

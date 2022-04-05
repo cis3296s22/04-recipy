@@ -1,6 +1,22 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
 
+def _timedelta_to_dict(td):
+    v = td.seconds
+    seconds = v % 60
+    v -= seconds
+    v /= 60
+    minutes = v % 60
+    v -= minutes
+    v /= 60
+    hours = v
+
+    return dict(
+        seconds=int(seconds),
+        minutes=int(minutes),
+        hours=int(hours)
+    )
+
 class BaseModel(models.Model):
     created_at = models.DateTimeField(auto_now_add=True, editable=False)
     updated_at = models.DateTimeField(auto_now=True, editable=False)
@@ -53,19 +69,30 @@ class Recipe(BaseModel):
     name = models.TextField()
     description = models.TextField()
     makes = models.IntegerField(default=1, null=False)
-    active_time = models.IntegerField(null=True)
-    passive_time = models.IntegerField(null=True)
+    picture_width = models.IntegerField(default=0, null=True, blank=True)
+    picture_height = models.IntegerField(default=0, null=True, blank=True)
+    picture = models.ImageField(upload_to='recipe-images/',
+                                        null=True, blank=True,
+                                        height_field='picture_height',
+                                        width_field='picture_width')
+
+
 
     def to_json(self):
-        return dict(
+        d = dict(
             owner=self.owner.to_json(),
             name=self.name,
             description=self.description,
             makes=self.makes,
-            active_time=self.active_time,
-            passive_time=self.passive_time,
             steps=[s.to_json() for s in Step.objects.filter(recipe_id=self.id)]
         )
+	if self.picture:
+            d['picture'] = dict(
+		url=self.picture.url,
+                width=self.picture_width,
+                height=self.picture_height
+            )
+        return d
 
 class Process(BaseModel):
     name = models.TextField()
@@ -103,30 +130,18 @@ class Ingredient(BaseModel):
         )
 
 class Step(BaseModel):
-    class TimeUnit(models.IntegerChoices):
-        SECOND = 1, 'Second'
-        MINUTE = 2, 'Minutes'
-        HOUR = 3, "Hours"
-        DAY = 4, "Days"
-
     order = models.IntegerField(null=False)
     recipe = models.ForeignKey(Recipe, on_delete=models.DO_NOTHING, null=False)
     process = models.ForeignKey(Process, on_delete=models.DO_NOTHING, null=False)
+    time = models.DurationField()
     equipment = models.ManyToManyField(Equipment)
-    time = models.FloatField(null=False)
-    time_units = models.IntegerField(
-        choices=TimeUnit.choices,
-        default=TimeUnit.MINUTE,
-        null=False
-    )
 
     def to_json(self):
         return dict(
             equipment=[e.to_json() for e in self.equipment.all()],
             order=self.order,
             process=self.process.to_json() if self.process else None,
-            time=self.time,
-            time_units=self.time_units,
+            time=_timedelta_to_dict(self.time),
             ingredients=[x.to_json() for x in IngredientUsage.objects.filter(step=self)]
         )
 
@@ -141,7 +156,7 @@ class IngredientUsage(BaseModel):
   
     def to_json(self):
         return dict(
-            ingredient=self.ingredient.to_json(),
+            **(self.ingredient.to_json()),
             amount=dict(
                 value=self.amount,
                 units=self.amount_units

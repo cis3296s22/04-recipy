@@ -94,6 +94,9 @@ def run_webpack_watcher():
     path = '/app/' + slug + '/webpack/'
     if os.path.isdir(path):
        node_path = os.environ.get('NODE_PATH', '') + ':' + path + "node_modules"
+
+       run_cmd(['npm', 'install', '.'], cwd=path, extra_env=dict(NODE_PATH=node_path))
+
        builder_args = ['watch', settings.STATIC_URL, slug, 'local']
        run_cmd(['node', '/usr/bin/webpack-builder.js', *builder_args],
                 cwd=path, extra_env=dict(NODE_PATH=node_path))

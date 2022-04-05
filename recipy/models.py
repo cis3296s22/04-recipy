@@ -86,7 +86,7 @@ class Recipe(BaseModel):
             makes=self.makes,
             steps=[s.to_json() for s in Step.objects.filter(recipe_id=self.id)]
         )
-	if self.picture:
+        if self.picture:
             d['picture'] = dict(
 		url=self.picture.url,
                 width=self.picture_width,

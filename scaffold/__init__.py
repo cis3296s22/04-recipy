@@ -16,6 +16,7 @@ def cli():
     p.add_argument('slug', type=str, default="app")
     p.add_argument('--srcroot', help='', type=str, default=".")
     p.add_argument('--rebuild', help='', default=False, action="store_true")
+    p.add_argument('--port', help='', default=8000)
 
     args = p.parse_args().__dict__
 
@@ -37,6 +38,7 @@ def ensure_dir(d, default=None):
 def run_local(slug='app', # module to run in srcroot
               srcroot='.',
               rebuild=False,
+              port=8000,
               postgres=True):
     srcroot = os.path.abspath(srcroot)
 
@@ -77,7 +79,7 @@ def run_local(slug='app', # module to run in srcroot
     media_dir = ensure_dir(None, os.path.join(srcroot, '.mediafiles/'))
 
     args = ['docker', 'run',
-             '-p', '8000:80',
+             '-p', str(port) + ':80',
              '-v', srcroot + ":/app",
              '-v', media_dir + ':/media',
              '-w', '/app',
@@ -115,21 +117,22 @@ def run_local(slug='app', # module to run in srcroot
             run_cmd(['docker', 'container', 'rm', pg_id], capture_output=True)
 
 def run_postgres(slug, network=None, data_dir=None):
-    data_dir = ensure_dir(data_dir, '~/.jazz/jazz-db-data-{}/'.format(slug))
+    if os.fork() == 0:
+        data_dir = ensure_dir(data_dir, '~/.jazz/jazz-db-data-{}/'.format(slug))
 
-    args = [
-        'docker', 'run',
-        '--name', 'jazz-db-' + slug,
-        '--hostname', 'jazz-db-' + slug,
-        '-p', '5432:5432',
-        '-e', 'POSTGRES_PASSWORD=postgres',
-        '--network', network,
-        '-v', data_dir + ":/var/lib/postgresql/data",
-        '-d',
-        'postgres'
-    ]
+        args = [
+            'docker', 'run',
+            '--name', 'jazz-db-' + slug,
+            '--hostname', 'jazz-db-' + slug,
+            '-p', '5432:5432',
+            '-e', 'POSTGRES_PASSWORD=postgres',
+            '--network', network,
+            '-v', data_dir + ":/var/lib/postgresql/data",
+            'postgres'
+        ]
 
-    run_cmd(args, capture_output=True)
+        run_cmd(args)
+        sys.exit(0)
 
     return 'jazz-db-' + slug
 

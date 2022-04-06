@@ -16,6 +16,7 @@ def cli():
     p.add_argument('slug', type=str, default="app")
     p.add_argument('--srcroot', help='', type=str, default=".")
     p.add_argument('--rebuild', help='', default=False, action="store_true")
+    p.add_argument('--port', help='', default=8000)
 
     args = p.parse_args().__dict__
 
@@ -37,6 +38,7 @@ def ensure_dir(d, default=None):
 def run_local(slug='app', # module to run in srcroot
               srcroot='.',
               rebuild=False,
+              port=8000,
               postgres=True):
     srcroot = os.path.abspath(srcroot)
 
@@ -77,7 +79,7 @@ def run_local(slug='app', # module to run in srcroot
     media_dir = ensure_dir(None, os.path.join(srcroot, '.mediafiles/'))
 
     args = ['docker', 'run',
-             '-p', '8000:80',
+             '-p', str(port) + ':80',
              '-v', srcroot + ":/app",
              '-v', media_dir + ':/media',
              '-w', '/app',

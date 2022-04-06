@@ -88,7 +88,6 @@ def run_cmd(cmd, shell=False, input=None, capture_output=False, cwd=None, extra_
 def run_webpack_watcher():
     from deploy.django import configure_django_settings
     configure_django_settings()
-
     from django.conf import settings
     slug = settings.DJANGO_APP_MODULE
     path = '/app/' + slug + '/webpack/'

@@ -1,7 +1,8 @@
 import './polyfills';
 import ReactDOM from 'react-dom';
 import React from 'react';
-import Homepage from './Homepage.jsx';
+import Home from './home.jsx';
+import Navbar from './navbar';
 
 /*
   - Recipe edit/create
@@ -14,8 +15,12 @@ import Homepage from './Homepage.jsx';
 */
 
 const App = () => {
-  return <Homepage />;
+  return <>
+    <Navbar username="Some User" loggedIn="true" />
+    <div style={{marginTop: '80px'}}>
+      <Home />
+    </div>
+  </>;
 }
 
-console.log("Hello world");
 ReactDOM.render(<App />, document.getElementById('root'));

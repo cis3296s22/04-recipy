@@ -11,6 +11,9 @@ let recipe = JSON.parse(window._json);
 let store = easyRedux(recipe, {
     setRecipeName: (state, {name}) => {
         return {...state, name};
+    },
+    setRecipeDescription: (state, {description}) => {
+        return {...state, description};
     }
 });
 
@@ -74,7 +77,7 @@ const HUMAN_UNITS = [
 	'kg',
 	'mL',
 	'L',
-	' pinches',
+	' pinch(es)',
 	''
 ];
 
@@ -85,8 +88,15 @@ const RecipeDetails = ({}) => {
     const description = useSelector(s => s.description);
     const makes = useSelector(s => s.makes);
     const picture = useSelector(s => s.picture);
-
     const numSteps = steps.length;
+
+    const currentUser = useSelector(s => s.currentUser);
+
+    let isEditable = currentUser && currentUser.id === owner.id;
+    if (window.location.search.includes('foo')) {
+        isEditable = true;
+    }
+
  
     let equipment = []
     let ingredients = []
@@ -101,14 +111,17 @@ const RecipeDetails = ({}) => {
         }
     }
 
+
     return <div className="recipe-details" style={style.recipeDetails}>
 		<img src={picture ? picture.url : null} style={{margin: '0 auto', marginBottom: 20, width: 150, height: 150, borderRadius: '100%', background: 'gray'}} />
-		<h2 style={{fontSize: '2rem', marginBottom: 5}}>{name}</h2>
+		{!isEditable && <h2 style={{fontSize: '2rem', marginBottom: 5}}>{name}</h2>}
+		{isEditable && <input style={{fontSize: '2rem', marginBottom: 5}} placeholder="Recipe name..." onChange={e => store.setRecipeName({name: e.target.value})} value={name} />}
                 <p style={{fontSize: '1rem', marginBottom: 10}}>By <a href={`/users/${owner.id}/`}>{owner.first_name} {owner.last_name}</a></p>
-		<p style={{margin: '10px 0'}}>{description}</p>
+		{!isEditable && <p style={{margin: '10px 0'}}>{description}</p>}
+	        {isEditable && <textarea style={{resize: 'none', width: '100%', height: 300, margin: '10px 0'}} onChange={e => store.setRecipeDescription({description: e.target.value}) } value={description} />}
 		<ul style={{}}>
 			<li>{numSteps == 1 ? "1 Step" : `${numSteps} Steps`}</li>
-			{makes && <li>Makes {makes}</li>}
+			{!isEditable && makes && <li>Makes {makes}</li>}
 		</ul>
     </div>;
 };

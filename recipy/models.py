@@ -59,6 +59,7 @@ class Equipment(BaseModel):
 
     def to_json(self):
         return dict(
+            id=self.id,
             name=self.name,
             maker=self.maker,
             kind=self.kind
@@ -100,7 +101,7 @@ class Process(BaseModel):
     description = models.TextField()
 
     def to_json(self):
-        return dict(name=self.name, description=self.description)
+        return dict(id=self.id, name=self.name, description=self.description)
 
 class Ingredient(BaseModel):
     class Units(models.IntegerChoices):
@@ -122,6 +123,7 @@ class Ingredient(BaseModel):
 
     def to_json(self):
         return dict(
+            id=self.id,
             name=self.name,
             calories=self.calories,
             serving_size=dict(
@@ -139,6 +141,7 @@ class Step(BaseModel):
 
     def to_json(self):
         return dict(
+            id=self.id,
             equipment=[e.to_json() for e in self.equipment.all()],
             order=self.order,
             process=self.process.to_json() if self.process else None,
@@ -158,6 +161,7 @@ class IngredientUsage(BaseModel):
     def to_json(self):
         return dict(
             **(self.ingredient.to_json()),
+            ingredient_usage_id=self.id,
             amount=dict(
                 value=self.amount,
                 units=self.amount_units

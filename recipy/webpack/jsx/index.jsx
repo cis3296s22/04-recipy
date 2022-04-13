@@ -11,16 +11,12 @@ import Navbar from './navbar';
   - Homepage w/ random recipes
       - evolves to include followed chefs
       - like instagram homepage
-
 */
 
 const App = () => {
-  return <>
-    <Navbar username="Some User" loggedIn="true" />
-    <div style={{marginTop: '80px'}}>
-      <Home />
-    </div>
-  </>;
+  return <Navbar loggedIn="true">
+    <Home />
+  </Navbar>;
 }
 
 ReactDOM.render(<App />, document.getElementById('root'));

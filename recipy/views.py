@@ -30,5 +30,5 @@ def view_recipe(request, recipe_id=None):
         "json": json.dumps(r.to_json())
     }))
 
-def userprofile(request):
-    return HttpResponse(render_to_string('userprofile.html',{}))
+def user(request, user_id=None):
+    return HttpResponse(render_to_string('user.html',{}))

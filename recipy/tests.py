@@ -1,3 +1,4 @@
+from xmlrpc.client import ResponseError
 from django.test import Client
 
 import unittest
@@ -19,3 +20,11 @@ class Tests(unittest.TestCase):
 
         response = self.client.get('user')
         self.assertEqual(response.status_code, 200)
+
+    def test_save_recipe_db(self):
+        response = None
+        self.assertEqual(response, None)
+
+    def test_delete_recipe_db(self):
+        response = None
+        self.assertEqual(response,None)

@@ -190,7 +190,8 @@ def configure_django_settings():
         USER=os.environ.get('POSTGRES_USER') or 'postgres',
         PASSWORD=os.environ.get('POSTGRES_PASSWORD') or 'postgres',
         HOST=os.environ.get('POSTGRES_HOST') or '0.0.0.0',
-        PORT=os.environ.get('POSTGRES_PORT') or '5432'
+        PORT=os.environ.get('POSTGRES_PORT') or '5432',
+        TEST=dict(NAME='test_db')
     )
 
     caches = app_settings.pop("CACHES", {})

@@ -18,9 +18,6 @@ def index(request):
         if request.user.is_authenticated:
             recipes.exclude(owner=request.user)
 
-    for i in recipes:
-        print(i)
-
     return HttpResponse(render_to_string('index.html', {
         "json": json.dumps([i.to_json() for i in recipes])
     }))

@@ -1,5 +1,7 @@
 import React from "react";
 
+let context = JSON.parse(window._json);
+
 let postStyle = {
     container: {
         position: 'relative',
@@ -17,6 +19,8 @@ let postStyle = {
         top: 0,
         bottom: 0,
         width: '40%',
+        border: '1px solid black',
+        borderRight: '0px solid black',
         boxSizing: 'border-box'
     },
     
@@ -27,7 +31,8 @@ let postStyle = {
         bottom: 0,
         width: '60%',
         boxSizing: 'border-box',
-        outline: '1px solid black',
+        border: '1px solid black',
+        borderLeft: '0px solid black',
         padding: '20px'
     },
         
@@ -48,6 +53,48 @@ let postStyle = {
     }
 };
 
+const searchStyle = {
+    div: {
+        textAlign: 'center'
+    },
+
+    input: {
+        width: '50%',
+        padding: '12px 20px',
+        margin: '8px 0px',
+        boxSizing: 'border-box'
+    }
+};
+
+class RecipeSearch extends React.Component {
+    constructor(props) {
+        super(props);
+        this.state = {value: ''};
+
+        this.handleChange = this.handleChange.bind(this);
+        this.handleSubmit = this.handleSubmit.bind(this);
+    }
+
+    handleChange(event) {
+        this.setState({value: event.target.value});
+    }
+
+    handleSubmit(event) {
+        event.preventDefault();
+        window.location.replace('/?search=' + this.state.value)
+    }
+
+    render() {
+        return (
+            <div style={searchStyle.div}> 
+                <form onSubmit={this.handleSubmit}>
+                    <input placeholder="Search recipes or users..." style={searchStyle.input} onChange={this.handleChange} />
+                </form>
+            </div>
+        );
+    };
+};
+
 const RecipePost = (props) => {
     return <div style={postStyle.container}> 
         <div style={postStyle.imgContainer}><img src={props.img} style={postStyle.img}/></div>
@@ -62,12 +109,15 @@ const RecipePost = (props) => {
 const Home = () => {
     return (
         <>
-            <RecipePost title="Pasta" user="Some User" desc="Simple pasta recipe for those who are hungry" img="static/pasta.png" />
-            <RecipePost title="Pasta" user="Some User" desc="Simple pasta recipe for those who are hungry" img="static/pasta.png" />
-            <RecipePost title="Pasta" user="Some User" desc="Simple pasta recipe for those who are hungry" img="static/pasta.png" />
-            <RecipePost title="Pasta" user="Some User" desc="Simple pasta recipe for those who are hungry" img="static/pasta.png" />
-            <RecipePost title="Pasta" user="Some User" desc="Simple pasta recipe for those who are hungry" img="static/pasta.png" />
-            <RecipePost title="Pasta" user="Some User" desc="Simple pasta recipe for those who are hungry" img="static/pasta.png" />
+            <RecipeSearch />
+            { 
+                context.map((recipe, index) => {
+                    const imgUrl = recipe.hasOwnProperty("picture") ? recipe.picture.url : "static/default_recipe.png"
+                    return (
+                        <RecipePost key={index} title={recipe.name} user={recipe.owner.username} desc={recipe.description} img={imgUrl} />
+                    )
+                }) 
+            }
         </>
     );
 }

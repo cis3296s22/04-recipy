@@ -1,6 +1,7 @@
 import React from "react";
 
 let context = JSON.parse(window._json);
+console.log(context)
 
 let postStyle = {
     container: {
@@ -21,7 +22,8 @@ let postStyle = {
         width: '40%',
         border: '1px solid black',
         borderRight: '0px solid black',
-        boxSizing: 'border-box'
+        boxSizing: 'border-box',
+        cursor: 'pointer'
     },
     
     contentContainer: {
@@ -33,7 +35,8 @@ let postStyle = {
         boxSizing: 'border-box',
         border: '1px solid black',
         borderLeft: '0px solid black',
-        padding: '20px'
+        padding: '20px',
+        cursor: 'pointer'
     },
         
     img: {
@@ -96,9 +99,13 @@ class RecipeSearch extends React.Component {
 };
 
 const RecipePost = (props) => {
+    const redirect = () => {
+        window.location.replace('/recipe/' + props.id)
+    }
+
     return <div style={postStyle.container}> 
-        <div style={postStyle.imgContainer}><img src={props.img} style={postStyle.img}/></div>
-        <div style={postStyle.contentContainer}>
+        <div style={postStyle.imgContainer} onClick={redirect}><img src={props.img} style={postStyle.img}/></div>
+        <div style={postStyle.contentContainer} onClick={redirect}>
             <h1 style={postStyle.title}>{props.title}</h1>
             <span>{props.user}</span>
             <p style={postStyle.desc}>{props.desc}</p>
@@ -111,10 +118,11 @@ const Home = () => {
         <>
             <RecipeSearch />
             { 
-                context.map((recipe, index) => {
+                context.map((recipe) => {
                     const imgUrl = recipe.hasOwnProperty("picture") ? recipe.picture.url : "static/default_recipe.png"
+
                     return (
-                        <RecipePost key={index} title={recipe.name} user={recipe.owner.username} desc={recipe.description} img={imgUrl} />
+                       <RecipePost key={recipe.id} id={recipe.id} title={recipe.name} user={recipe.owner.username} desc={recipe.description} img={imgUrl} />
                     )
                 }) 
             }

@@ -1,4 +1,5 @@
 import React from "react";
+import {useState} from 'react';
 
 const style = {
     navbar: { 
@@ -63,34 +64,75 @@ const style = {
 };
 
 const Navbar = (props) => {
-    let loggedIn = <div className="navbar">
-        <div className="navTitle">Reci.py</div>
+    const [isActive, setActive] = useState(false);
 
-        <div className="nav">
-            <a href="">Home</a>
-            <a href="">Posts</a>
-            <a href="">Create</a>
+    const toggleClass = () => {
+        setActive(!isActive);
+    };    
 
-            <div className="navDropdown">
-                <a href="">{props.username}</a>
-                <div className="navDropdownContent">
-                    <a href="">Profile</a>
-                    <a href="">Logout</a>
+    const redirect = () => {
+        let url = new URL(window.location.href);
+        let params = new URLSearchParams(url.search);
+        params.delete('search');
+    }
+
+    let loggedIn = <div>
+        <header className={isActive ? "header header-active" : "header"}>
+            <nav className="navbar">
+                <a href="/" className="nav-logo" onClick={redirect}>Reci.py</a>
+                <ul className={isActive ? "nav-menu active" : "nav-menu"}>
+                    <li className="nav-item">
+                        <a href="/" className="nav-link" onClick={redirect}>Home</a>
+                    </li>
+                    <li className="nav-item">
+                        <a href="" className="nav-link">Create</a>
+                    </li>
+                    <li className="nav-item">
+                        <a href="" className="nav-link">Profile</a>
+                    </li>
+                    <li className="nav-item">
+                        <a href="" className="nav-link">Logout</a>
+                    </li>
+                </ul>
+                <div className={isActive ? "hamburger active" : "hamburger"} onClick={toggleClass}>
+                    <span className="bar"></span>
+                    <span className="bar"></span>
+                    <span className="bar"></span>
                 </div>
-            </div>
-        </div>
-    </div>;
+            </nav>
+        </header>
 
-    let loggedOut = <div className="navbar">
-        <div className="navTitle">Reci.py</div>
-
-        <div className="nav">
-            <a href="">Home</a>
-            <a href="">Log In</a>
+        <div className="content">
+            {props.children}
         </div>
-    </div>;
+    </div>
+
+    let loggedOut = <div>
+        <header className={isActive ? "header header-active" : "header"}>
+            <nav className="navbar">
+                <a href="" className="nav-logo">Reci.py</a>
+                <ul className={isActive ? "nav-menu active" : "nav-menu"}>
+                    <li className="nav-item">
+                        <a href="/" className="nav-link">Home</a>
+                    </li>
+                    <li className="nav-item">
+                        <a href="" className="nav-link">Log In</a>
+                    </li>
+                </ul>
+                <div className={isActive ? "hamburger active" : "hamburger"} onClick={toggleClass}>
+                    <span className="bar"></span>
+                    <span className="bar"></span>
+                    <span className="bar"></span>
+                </div>
+            </nav>
+        </header>
+
+        <div className="content">
+            {props.children}
+        </div>
+    </div>
 
     return (props.loggedIn === "true" ? loggedIn : loggedOut);
-};
+}
 
 export default Navbar;

@@ -80,6 +80,7 @@ class Recipe(BaseModel):
 
     def to_json(self):
         d = dict(
+            id=self.id,
             owner=self.owner.to_json(),
             name=self.name,
             description=self.description,

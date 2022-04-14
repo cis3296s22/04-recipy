@@ -1,7 +1,11 @@
 import React from "react";
+import {useState} from 'react';
+import Navbar from './navbar';
 
 let context = JSON.parse(window._json);
-console.log(context)
+let recipes = JSON.parse(context['recipes']);
+let chefs = JSON.parse(context['chefs']);
+let user_id = JSON.parse(context["user_id"]);
 
 let postStyle = {
     container: {
@@ -69,6 +73,55 @@ const searchStyle = {
     }
 };
 
+const selectionStyle = {
+    container: {
+        textAlign: 'center'
+    },
+
+    btn: {
+        width: '25%',
+        height: '50px'
+    },
+
+    activeRight: {
+        height: '100%',
+        background: 'linear-gradient(to right, #eee 50%, #aaa 50%)',
+
+        "&:hover": {
+            background: "#aaa"
+        }
+    },
+
+    activeLeft: {
+        height: '100%',
+        background: 'linear-gradient(to right, #aaa 50%, #eee 50%)',
+
+        "&:hover": {
+            background: "#aaa"
+        }
+    },
+
+    nameWrapper: {
+        display: 'flex',
+        justifyConent: 'space-between',
+    },
+
+    recipes: {
+        marginTop: '15px',
+        width: '50%',
+        height: '100%',
+        textAlign: 'center'
+    },
+
+    users: {
+        marginTop: '15px',
+        width: '50%',
+        width: '50%',
+        height: '100%',
+        textAlign: 'center'
+    }
+}
+
 class RecipeSearch extends React.Component {
     constructor(props) {
         super(props);
@@ -113,12 +166,25 @@ const RecipePost = (props) => {
     </div>;
 };
 
-const Home = () => {
+const UserPost = (props) => {
+    const redirect = () => {
+        window.location.replace('/user/' + props.id)
+    }
+
+    return <div style={postStyle.container}> 
+        <div style={postStyle.imgContainer} onClick={redirect}><img src={props.img} style={postStyle.img}/></div>
+        <div style={postStyle.contentContainer} onClick={redirect}>
+            <h1 style={postStyle.title}>{props.username}</h1>
+        </div>
+    </div>;
+};
+
+const Recipes = () => {
     return (
         <>
             <RecipeSearch />
             { 
-                context.map((recipe) => {
+                recipes.map((recipe) => {
                     const imgUrl = recipe.hasOwnProperty("picture") ? recipe.picture.url : "static/default_recipe.png"
 
                     return (
@@ -126,8 +192,50 @@ const Home = () => {
                     )
                 }) 
             }
-        </>
+        </> 
     );
+}
+
+const Users = () => {
+    return (
+        <>
+            <RecipeSearch />
+            { 
+                chefs.map((chef) => {
+                    const imgUrl = chef.hasOwnProperty("picture") ? chef.picture.url : "static/default_recipe.png"
+
+                    return (
+                       <UserPost key={chef.id} id={chef.id} username={chef.username} img={imgUrl} />
+                    )
+                }) 
+            }
+        </> 
+    );
+}
+
+const Home = () => {
+    const [toggle, setToggle] = useState(true);
+    const toggleSelection = () => setToggle(toggle => !toggle);
+    return (
+        <Navbar authenticated={(user_id !== null)} user_id={user_id}>
+            <div style={selectionStyle.container}>
+                <button style={selectionStyle.btn} onClick={toggleSelection}>
+                    <div style={(toggle ? selectionStyle.activeLeft : selectionStyle.activeRight)}>
+                        <div style={selectionStyle.nameWrapper}> 
+                            <p style={selectionStyle.recipes}>Recipes</p>
+                            <p style={selectionStyle.users}>User</p>
+                        </div>
+                    </div>
+                </button>
+            </div>
+
+            {toggle && <Recipes /> }
+            {!toggle && <Users /> }
+
+        </Navbar>
+    );
+    // NOTE(anand): this is for testing
+    // <RecipePost title="Pasta" user="Some User" desc="Simple pasta recipe for those who are hungry" img="static/pasta.png" />
 }
 
 export default Home;

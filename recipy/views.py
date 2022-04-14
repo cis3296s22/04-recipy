@@ -3,7 +3,6 @@ from django.template.loader import render_to_string
 from django.db.models import Q
 from django.core import serializers
 import json
-from django.db.models import Q
 
 from recipy.models import *
 
@@ -11,15 +10,22 @@ def index(request):
     search = request.GET.get('search')
 
     if search:
-        # TODO(anand): Add in username into search as well)
         recipes = Recipe.objects.filter(Q(name__icontains=search) | Q(description__icontains=search))
+        chefs = Chef.objects.filter(Q(username__icontains=search))
+    elif request.user.is_authenticated:
+        recipes = Recipe.objects.all().exclude(owner=request.user)
+        chefs = Chef.objects.all().exclude(id=request.user.id)
     else:
         recipes = Recipe.objects.all().order_by('-updated_at')
-        if request.user.is_authenticated:
-            recipes.exclude(owner=request.user)
+        chefs = Chef.objects.all().order_by("-created_at")
 
+        
     return HttpResponse(render_to_string('index.html', {
-        "json": json.dumps([i.to_json() for i in recipes])
+        "json": json.dumps({
+            "recipes" : json.dumps([i.to_json() for i in recipes]),
+            "chefs" : json.dumps([i.to_json() for i in chefs]),
+            "user_id": json.dumps(request.user.id)
+        })
     }))
 
 def search_process(request):

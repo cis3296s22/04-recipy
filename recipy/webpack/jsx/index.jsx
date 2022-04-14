@@ -14,9 +14,7 @@ import Navbar from './navbar';
 */
 
 const App = () => {
-  return <Navbar loggedIn="true">
-    <Home />
-  </Navbar>;
+  return <Home />;
 }
 
 ReactDOM.render(<App />, document.getElementById('root'));

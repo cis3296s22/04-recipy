@@ -17,8 +17,12 @@ a {
 }
 
 .header{
-    border-bottom: 1px solid #E2E8F0;
     background-color: #00ffc1;
+    position: fixed;
+    top: 0px;
+    left: 0px;
+    z-index: 1;
+    width: 100%;
 }
 
 .navbar {
@@ -76,7 +80,7 @@ a {
 }
 
 .content {
-    margin-top: 30px;
+    margin-top: 100px;
 }
 
 .footer {
@@ -87,7 +91,7 @@ a {
     .nav-menu {
         position: fixed;
         left: -100%;
-        top: 7rem;
+        top: 6.3rem;
         flex-direction: column;
         background-color: #fff;
         width: 100%;

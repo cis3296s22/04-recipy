@@ -2,7 +2,6 @@ import './polyfills';
 import ReactDOM from 'react-dom';
 import React from 'react';
 import Home from './home.jsx';
-import Navbar from './navbar';
 
 /*
   - Recipe edit/create

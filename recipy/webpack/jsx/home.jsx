@@ -7,71 +7,161 @@ let recipes = JSON.parse(context['recipes']);
 let chefs = JSON.parse(context['chefs']);
 let user_id = JSON.parse(context["user_id"]);
 
-let postStyle = {
-    container: {
-        position: 'relative',
-        width: '50%',
-        height: '300px',
-        marginLeft: '25%',
-        marginRight: '25%',
-        marginTop: '25px',
-        marginBottom: '25px'
-    },
+const PostStyle = () => {
+    return (
+        <style> {`
+            .container {
+                position: relative;
+                width: 50%;
+                height: 200px;
+                margin-left: 25%;
+                margin-right: 25%;
+                margin-top: 25px;
+                margin-bottom: 25px;
+            }
 
-    imgContainer: {
-        position: 'absolute',
-        left: 0,
-        top: 0,
-        bottom: 0,
-        width: '40%',
-        border: '1px solid black',
-        borderRight: '0px solid black',
-        boxSizing: 'border-box',
-        cursor: 'pointer'
-    },
-    
-    contentContainer: {
-        position: 'absolute',
-        top: 0,
-        right: 0,
-        bottom: 0,
-        width: '60%',
-        boxSizing: 'border-box',
-        border: '1px solid black',
-        borderLeft: '0px solid black',
-        padding: '20px',
-        cursor: 'pointer'
-    },
-        
-    img: {
-        width: '100%',
-        height: '100%',
-    },
+            .imgContainer {
+                position: absolute;
+                left: 0;
+                top: 0;
+                bottom: 0;
+                width: 30%;
+                border: 1px solid black;
+                border-right: 0px solid black;
+                box-sizing: border-box;
+                cursor: pointer;
 
-    title: {
-        fontSize: '64px',
-        marginBottom: '5px',
-        marginTop: '25px'
-    },
+                display: flex;
+                justify-content: center;
+                align-items: center;
+            }
 
-    desc: {
-        fontSize: '28px',
-        marginTop: '30px'
-    }
-};
+            .contentContainer {
+                position: absolute;
+                top: 0;
+                right: 0;
+                bottom: 0;
+                width: 70%;
+                box-sizing: border-box;
+                border: 1px solid black;
+                border-left: 0px solid black;
+                padding: 20px;
+                cursor: pointer;
+            }
 
-const searchStyle = {
-    div: {
-        textAlign: 'center'
-    },
+            .postImg {
+                width: 100%;
+                height: auto;
+                max-height: 200px;
+                max-width: 200px;
+            }
 
-    input: {
-        width: '50%',
-        padding: '12px 20px',
-        margin: '8px 0px',
-        boxSizing: 'border-box'
-    }
-};
+            .postTitle {
+                font-size: 32;
+                margin-bottom: 5px;
+                margin-top: 15px;
+            }
+
+            .postDesc {
+                font-size: 24;
+                margin-top: 20px;
+            }
+
+            .postUsername {
+                font-size: 18;
+            }
+
+            @media only screen and (max-width: 768px) {
+                .container {
+                    position: relative;
+                    width: 80%;
+                    height: 300px;
+                    margin-left: 10%;
+                    margin-right: 10%;
+                    margin-rop: 25px;
+                    margin-bottom: 25px;
+                }
+
+                .imgContainer {
+                    width: auto;
+                    height: 45%;
+                    position: absolute;
+                    left: 0;
+                    right: 0;
+                    top: 0;
+                    border: 1px solid black;
+                    border-bottom: 0px solid black;
+                    box-sizing: border-box;
+                    cursor: pointer;
+
+                    display: flex;
+                    justify-content: center;
+                    alignItems: center;
+                }
+                
+                .contentContainer {
+                    width: auto;
+                    height: 55%;
+                    position: absolute;
+                    left: 0;
+                    right: 0;
+                    bottom: 0;
+                    box-sizing: border-box;
+                    border: 1px solid black;
+                    border-top: 0px solid black;
+                    padding: 20px;
+                    cursor: pointer;
+
+                    margin-top: 100px;
+                }
+
+                .postImg {
+                    width: 100%;
+                    height: auto;
+                    max-height: 100px;
+                    max-width: 100px;
+                }
+
+                .postTitle {
+                    font-size: 32;
+                    margin-top: 5px;
+                    margin-bottom: 5px;
+                }
+
+                .postDesc {
+                    font-size: 20;
+                    margin-top: 15px;
+                }
+            }
+        `}</style>
+    );
+}
+
+const SearchStyle = () => {
+    return (
+        <style> {`
+            .searchContainer {
+                text-align: center;
+            }
+
+            .searchInput {
+                width: 50%;
+                padding: 12px 20px;
+                margin: 8px 0px;
+                box-sizing: border-box;
+            }
+
+            @media only screen and (max-width: 768px) {
+                .searchInput {
+                    width: 80%;
+                    padding: 12px 20px;
+                    margin: 8px 0px;
+                    box-sizing: border-box;
+                }
+            }
+        `}</style>
+    );
+}
 
 const selectionStyle = {
     container: {
@@ -142,11 +232,14 @@ class RecipeSearch extends React.Component {
 
     render() {
         return (
-            <div style={searchStyle.div}> 
-                <form onSubmit={this.handleSubmit}>
-                    <input placeholder="Search recipes or users..." style={searchStyle.input} onChange={this.handleChange} />
-                </form>
-            </div>
+            <>
+                <SearchStyle />
+                <div className="searchContainer"> 
+                    <form onSubmit={this.handleSubmit}>
+                        <input placeholder="Search recipes or users..." className="searchInput" onChange={this.handleChange} />
+                    </form>
+                </div>
+            </>
         );
     };
 };
@@ -156,12 +249,13 @@ const RecipePost = (props) => {
         window.location.replace('/recipe/' + props.id)
     }
 
-    return <div style={postStyle.container}> 
-        <div style={postStyle.imgContainer} onClick={redirect}><img src={props.img} style={postStyle.img}/></div>
-        <div style={postStyle.contentContainer} onClick={redirect}>
-            <h1 style={postStyle.title}>{props.title}</h1>
-            <span>{props.user}</span>
-            <p style={postStyle.desc}>{props.desc}</p>
+
+    return <div className="container"> 
+        <div className="imgContainer" onClick={redirect}><img src={props.img} className="postImg"/></div>
+        <div className="contentContainer" onClick={redirect}>
+            <h1 className="postTitle">{props.title}</h1>
+            <span className="postUsername">{props.user}</span>
+            <p className="postDesc">{props.desc}</p>
         </div>
     </div>;
 };
@@ -171,10 +265,10 @@ const UserPost = (props) => {
         window.location.replace('/user/' + props.id)
     }
 
-    return <div style={postStyle.container}> 
-        <div style={postStyle.imgContainer} onClick={redirect}><img src={props.img} style={postStyle.img}/></div>
-        <div style={postStyle.contentContainer} onClick={redirect}>
-            <h1 style={postStyle.title}>{props.username}</h1>
+    return <div className="container"> 
+        <div className="imgContainer" onClick={redirect}><img src={props.img} className="postImg"/></div>
+        <div className="contentContainer" onClick={redirect}>
+            <h1 className="postTitle">{props.username}</h1>
         </div>
     </div>;
 };
@@ -182,6 +276,7 @@ const UserPost = (props) => {
 const Recipes = () => {
     return (
         <>
+            <PostStyle />
             <RecipeSearch />
             { 
                 recipes.map((recipe) => {
@@ -199,6 +294,7 @@ const Recipes = () => {
 const Users = () => {
     return (
         <>
+            <PostStyle />
             <RecipeSearch />
             { 
                 chefs.map((chef) => {

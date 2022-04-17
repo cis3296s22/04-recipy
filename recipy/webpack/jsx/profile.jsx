@@ -1,23 +1,18 @@
 import React from 'react';
-import Friend from './components/Friend';
 import {useState} from 'react';
 import Navbar from './navbar';
 import ReactDOM from 'react-dom';
 
 let context = JSON.parse(window._json);
-let recipes = JSON.parse(context['recipes']);
-let chefs = JSON.parse(context['chefs']);
 let user_id = JSON.parse(context["user_id"]);
 
-    const Friend = (props) => {
-        return <div>
-            <img className='Avatar' src={props.avatarUrl} alt={props.username}/>
-        </div>
-}
+const Friend = (props) => {
+    return <div>
+        <img className='Avatar' src={props.avatarUrl} alt={props.username}/>
+    </div>
+};
 
     const Profile = (props) => {
-        const [toggle, setToggle] = useState(true);
-        const toggleSelection = () => setToggle(toggle => !toggle);
         let postStyle = {
             container: {
                 position: 'relative',
@@ -42,20 +37,10 @@ let user_id = JSON.parse(context["user_id"]);
         return (
             
             <div style ={postStyle.container}>
-                 <Navbar authenticated={(user_id !== null)} user_id={user_id}>
-            <div style={selectionStyle.container}>
-                <button style={selectionStyle.btn} onClick={toggleSelection}>
-                    <div style={(toggle ? selectionStyle.activeLeft : selectionStyle.activeRight)}>
-                        <div style={selectionStyle.nameWrapper}> 
-                            <p style={selectionStyle.recipes}>Recipes</p>
-                            <p style={selectionStyle.users}>User</p>
-                        </div>
-                    </div>
-                </button>
-            </div>
-        </Navbar>
+                <Navbar />
                 <div style={postStyle.picture}>
                     <img className='Avatar' src={props.user.avatarUrl} alt={props.user.name}/>
+                    <h1>{props.username}</h1>
                 </div>
                 <div style={postStyle.lists}>
                     <div className='ChefsFriends'>
@@ -73,4 +58,6 @@ let user_id = JSON.parse(context["user_id"]);
         );
 
     };
+
+
 ReactDOM.render(<Profile />, document.getElementById('root'));

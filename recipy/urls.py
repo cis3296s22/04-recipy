@@ -10,6 +10,7 @@ urlpatterns = [
     path('', views.index, name=settings.LOGIN_REDIRECT_URL),
     path('recipe/<int:recipe_id>/', views.view_recipe),
     path('accounts/', include('django.contrib.auth.urls')),
+    path('accounts/register/', views.register),
 
     path('json/search/process/', views.search_process),
     path('json/search/ingredient/', views.search_ingredient),

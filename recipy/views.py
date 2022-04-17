@@ -61,8 +61,8 @@ def view_recipe(request, recipe_id=None):
         "json": json.dumps(r.to_json())
     }))
 
-def user(request, chef_id=None):
-    c = Chef.objects.filter(id=chef_id).first()
+def user(request, user_id=None):
+    c = Chef.objects.filter(id=user_id).first()
     return HttpResponse(render_to_string('user.html',{
         "json": json.dumps(c.to_json())
     }))

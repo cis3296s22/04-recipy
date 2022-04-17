@@ -15,7 +15,7 @@ urlpatterns = [
     path('json/search/process/', views.search_process),
     path('json/search/ingredient/', views.search_ingredient),
     path('json/search/equipment/', views.search_equipment),
-    path('user/<int:user_id>/', views.user),
+    path('users/<int:user_id>', views.user),
 
     *static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 ]

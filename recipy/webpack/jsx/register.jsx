@@ -95,8 +95,8 @@ const Register = () => {
                 <div className="registerInputContainter"><input className="registerInput" placeholder="Email" name="email" id="email-input" /></div>
                 <div className="registerInputContainter"><input className="registerInput" placeholder="First Name" name="fname" id="fname-input" /></div>
                 <div className="registerInputContainter"><input className="registerInput" placeholder="Last Name" name="lname" id="lname-input" /></div>
-                <div className="registerInputContainter"><input className="registerInput" placeholder="Password" name="password" id="password-input" /></div>
-                <div className="registerInputContainter"><input className="registerInput" placeholder="Confirm" name="confirm" id="confirm-input" /></div>
+                <div className="registerInputContainter"><input className="registerInput" placeholder="Password" name="password" id="password-input" type="password" /></div>
+                <div className="registerInputContainter"><input className="registerInput" placeholder="Confirm" name="confirm" id="confirm-input" type="password" /></div>
                 <input className="registerBtn" type="submit" />
             </form>
         </div>

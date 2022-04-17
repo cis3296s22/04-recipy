@@ -1,10 +1,14 @@
 from django.http import HttpResponse, JsonResponse
+from django.contrib.auth import login as dj_login, authenticate
 from django.template.loader import render_to_string
 from django.db.models import Q
 from django.core import serializers
+from django.http import HttpResponseRedirect
+from django.template.context_processors import csrf
 import json
 
 from recipy.models import *
+from recipy.forms import *
 
 def index(request):
     search = request.GET.get('search')
@@ -59,3 +63,31 @@ def view_recipe(request, recipe_id=None):
 
 def user(request, user_id=None):
     return HttpResponse(render_to_string('user.html',{}))
+
+def register(request):
+    response_data = {}
+
+    context_dict = { 'form': None }
+    form = RegistrationForm()
+
+    if request.user.is_authenticated:
+        return HttpResponseRedirect('/')
+    elif request.method == "GET":
+        context_dict['form'] = form
+    elif request.method == "POST":
+        form = RegistrationForm(request.POST)
+        context_dict['form'] = form
+        if form.is_valid():
+            form.save()
+
+            username = form.cleaned_data['username']
+            password = form.cleaned_data['password']
+            user = authenticate(username=username, password=password)
+            dj_login(request, user)
+            return HttpResponseRedirect('/')
+        else:
+            response_data['error'] = json.dumps(form.errors)
+
+    return HttpResponse(render_to_string('registration/register.html', {
+        "json": json.dumps(response_data)
+    }))

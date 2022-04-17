@@ -16,22 +16,22 @@ const Navbar = (props) => {
 
     const loggedIn = <>
         <li className="nav-item">
-            <a href="recipe/create/" className="nav-link">Create</a>
+            <a href="/recipe/create/" className="nav-link">Create</a>
         </li>
         <li className="nav-item">
-            <a href={"users/" + props.user_id} className="nav-link">Profile</a>
+            <a href={"/users/" + props.user_id} className="nav-link">Profile</a>
         </li>
         <li className="nav-item">
-            <a href="accounts/logout/" className="nav-link">Logout</a>
+            <a href="/accounts/logout/" className="nav-link">Logout</a>
         </li>
     </>;
 
     const loggedOut = <>
         <li className="nav-item">
-            <a href="accounts/register/" className="nav-link">Sign Up</a>
+            <a href="/accounts/register/" className="nav-link">Sign Up</a>
         </li>
         <li className="nav-item">
-            <a href="accounts/login/" className="nav-link">Log In</a>
+            <a href="/accounts/login/" className="nav-link">Log In</a>
         </li>
     </>;
 

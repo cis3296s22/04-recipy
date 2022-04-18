@@ -62,9 +62,15 @@ def view_recipe(request, recipe_id=None):
     }))
 
 def user(request, user_id=None):
+    recipes = Recipe.objects.all().filter(owner=request.user)
+
     c = Chef.objects.filter(id=user_id).first()
     return HttpResponse(render_to_string('user.html',{
-        "json": json.dumps(c.to_json())
+        "json": json.dumps({
+            "user_id": json.dumps(c.id),
+            "user_name": json.dumps(c.username),
+            "recipes" : json.dumps([i.to_json() for i in recipes])
+            })
     }))
 
 def register(request):

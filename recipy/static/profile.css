@@ -1,1 +1,17 @@
-.bRow{display: flex;flex-direction: row;}
+.ex5 .parent {
+    display: grid;
+    grid-template: auto 1fr auto / auto  1fr auto;
+}
+
+.ex5 .profile {
+    padding: 2rem;
+    grid-column: 1/4;
+}
+
+.ex5 .ChefsFriends {
+    grid-column: 1 / 2;
+}
+
+.ex5 .ChefsRecipes {
+    grid-column: 3 / 4;
+}

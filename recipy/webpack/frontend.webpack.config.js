@@ -5,7 +5,8 @@ module.exports = {
   entry: {
       index: path.resolve('jsx/index.jsx'),
       recipe: path.resolve('jsx/recipe.jsx'),
-      register: path.resolve('jsx/register.jsx')
+      register: path.resolve('jsx/register.jsx'),
+      profile: path.resolve('jsx/profile.jsx')
   },
   module: {
     rules: [

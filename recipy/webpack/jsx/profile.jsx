@@ -1,6 +1,32 @@
 import React from 'react';
-import Friend from './components/Friend';
+import {useState} from 'react';
+import Navbar from './navbar';
+import ReactDOM from 'react-dom';
 
+
+let context = JSON.parse(window._json);
+let user_id = JSON.parse(context["user_id"]);
+let user_name = JSON.parse(context["user_name"]);
+let recipes = JSON.parse(context['recipes']);
+
+const Friend = (props) => {
+    return <div>
+        <img className='Avatar' src={props.avatarUrl} alt={props.username}/>
+        <h1>Username: {user_name}</h1>
+    </div>
+};
+const RecipePost = (props) => {
+    return <div className="container"> 
+        <div className="imgContainer" >
+            <img src={props.img} className="postImg"/>
+            </div>
+        <div className="contentContainer">
+            <h1 className="postTitle">{props.title}</h1>
+            <span className="postUsername">Made by:{props.user}</span>
+            <p className="postDesc">Recipe description:{props.desc}</p>
+        </div>
+    </div>;
+};
     const Profile = (props) => {
         let postStyle = {
             container: {
@@ -24,24 +50,34 @@ import Friend from './components/Friend';
             }
         };
         return (
-            <div style ={postStyle.container}>
-                <div style={postStyle.picture}>
-                    <img className='Avatar' src={props.user.avatarUrl} alt={props.user.name}/>
+            
+            <div>
+                <Navbar authenticated={(user_id !== null)} user_id={user_id}/>
+        
+                <div className='parent'>
+                <div className='profile'>
+                    <Friend avatarUrl="/static/default_recipe.png" username={user_name}/>                    
                 </div>
+                
                 <div style={postStyle.lists}>
                     <div className='ChefsFriends'>
-                        <Friend avatarUrl="static/pasta.png" username="user1"/>
-                        <Friend avatarUrl="static/pasta.png" username="user1"/>
-                        <Friend avatarUrl="static/pasta.png" username="user1"/>
+                        <h1>Friends List:</h1>
+
+                        <Friend avatarUrl="/static/chefhat3.jpeg" username="James"/>
+                        <Friend avatarUrl="/static/chefhat4.png" username="Kevin"/>
                     </div>
                     <div className='ChefsRecipes'>
-                        <RecipePost title="Pasta" user="Some User" desc="Simple pasta recipe for those who are hungry" img="static/pasta.png" />
-                        <RecipePost title="Pasta" user="Some User" desc="Simple pasta recipe for those who are hungry" img="static/pasta.png" />
-                        <RecipePost title="Pasta" user="Some User" desc="Simple pasta recipe for those who are hungry" img="static/pasta.png" />    
+                        <h1>{user_name}'s Recipes:</h1>
+                        <RecipePost title="Pasta" user={user_name} desc="Simple pasta recipe for those who are hungry" img="chefhat3.jpeg" />
+                        <RecipePost title="Chicken" user={user_name} desc="Simple chicken recipe for those who are hungry" img="static/chicken.jpeg" />
+                        <RecipePost title="Soup" user={user_name} desc="Simple soup recipe for those who are hungry" img="static/pasta.jpeg" />
                     </div>
+                </div>
                 </div>
             </div>
         );
 
     };
-export default Profile;
+
+
+ReactDOM.render(<Profile />, document.getElementById('root'));

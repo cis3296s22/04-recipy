@@ -262,7 +262,7 @@ const RecipePost = (props) => {
 
 const UserPost = (props) => {
     const redirect = () => {
-        window.location.replace('/user/' + props.id)
+        window.location.replace('/users/' + props.id)
     }
 
     return <div className="container"> 
@@ -273,13 +273,13 @@ const UserPost = (props) => {
     </div>;
 };
 
-const Recipes = () => {
+const Recipes = (props) => {
     return (
         <>
             <PostStyle />
             <RecipeSearch />
             { 
-                recipes.map((recipe) => {
+                props.recipes.map((recipe) => {
                     const imgUrl = recipe.hasOwnProperty("picture") ? recipe.picture.url : "static/default_recipe.png"
 
                     return (
@@ -291,13 +291,13 @@ const Recipes = () => {
     );
 }
 
-const Users = () => {
+const Users = (props) => {
     return (
         <>
             <PostStyle />
             <RecipeSearch />
             { 
-                chefs.map((chef) => {
+                props.chefs.map((chef) => {
                     const imgUrl = chef.hasOwnProperty("picture") ? chef.picture.url : "static/default_recipe.png"
 
                     return (
@@ -325,13 +325,10 @@ const Home = () => {
                 </button>
             </div>
 
-            {toggle && <Recipes /> }
-            {!toggle && <Users /> }
-
+            {toggle && <Recipes recipes={recipes} /> }
+            {!toggle && <Users chefs={chefs} /> }
         </Navbar>
     );
-    // NOTE(anand): this is for testing
-    // <RecipePost title="Pasta" user="Some User" desc="Simple pasta recipe for those who are hungry" img="static/pasta.png" />
 }
 
 export default Home;

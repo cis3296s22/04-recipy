@@ -6,6 +6,7 @@ import ReactDOM from 'react-dom';
 
 let context = JSON.parse(window._json);
 let user_id = JSON.parse(context["user_id"]);
+let current_user_id = JSON.parse(context["current_user_id"]);
 let user_name = JSON.parse(context["user_name"]);
 let recipes = JSON.parse(context['recipes']);
 
@@ -52,7 +53,7 @@ const RecipePost = (props) => {
         return (
             
             <div>
-                <Navbar authenticated={(user_id !== null)} user_id={user_id}/>
+                <Navbar authenticated={(current_user_id !== null)} user_id={current_user_id}/>
         
                 <div className='parent'>
                 <div className='profile'>

@@ -22,7 +22,7 @@ const Navbar = (props) => {
             <a href={"/users/" + props.user_id} className="nav-link">Profile</a>
         </li>
         <li className="nav-item">
-            <a href="/accounts/logout/" className="nav-link">Logout</a>
+            <a href="/accounts/logout/?next=/" className="nav-link">Logout</a>
         </li>
     </>;
 

@@ -18,6 +18,10 @@ def _timedelta_to_dict(td):
     )
 
 class BaseModel(models.Model):
+    """
+    Base model from which other models inherit. Provides created_at/
+    updated_at functionality.
+    """
     created_at = models.DateTimeField(auto_now_add=True, editable=False)
     updated_at = models.DateTimeField(auto_now=True, editable=False)
 
@@ -28,6 +32,9 @@ class BaseModel(models.Model):
         return None
 
 class Chef(AbstractUser, BaseModel):
+    """
+    Django User model.
+    """
     profile_picture_width = models.IntegerField(default=0, null=True, blank=True)
     profile_picture_height = models.IntegerField(default=0, null=True, blank=True)
     profile_picture = models.ImageField(upload_to='chef-profile-images/',
@@ -53,6 +60,9 @@ class Chef(AbstractUser, BaseModel):
         return d
 
 class Equipment(BaseModel):
+    """
+    Stores information about a single piece of equipment, to be used with :model:`recipy.Step`.
+    """
     name = models.TextField(null=False)
     maker = models.TextField(null=False)
     kind = models.TextField(null=False)
@@ -66,6 +76,9 @@ class Equipment(BaseModel):
         )
 
 class Recipe(BaseModel):
+    """
+    Represents a recipe.
+    """
     owner = models.ForeignKey(Chef, on_delete=models.CASCADE, null=False)
     name = models.TextField()
     description = models.TextField()

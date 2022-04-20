@@ -34,7 +34,7 @@ def search_process(request):
 def search_ingredient(request):
     s = request.GET.get('s', '')
 
-    xs = Ingredient.objects.filter(Q(name__startswith=s)).order_by('name')
+    xs = Ingredient.objects.filter(Q(name__istartswith=s)).order_by('name')
     xss = list(map(lambda x: x.to_json(), xs))
     return JsonResponse(xss, safe=False)
 
@@ -66,7 +66,8 @@ def view_recipe(request, recipe_id=None):
 def save_recipe(request):
     if request.method == 'POST':
         d = json.loads(request.body)
-        r = Recipe.objects.get(id=d['id']) if 'id' in d else Recipe()
+        rid = d.get('id')
+        r = Recipe.objects.get(id=rid) if rid else Recipe()
         r.description = d.get('description')
         r.makes = d.get('makes', 0)
         r.name = d.get('name')
@@ -77,7 +78,7 @@ def save_recipe(request):
             sid = x.get('id')
             if x.get('deleted', False):
                 if sid:
-                    Step.objects.delete(id=sid)
+                    Step.objects.get(id=sid).delete()
                 continue
             s = Step.objects.get(id=sid) if sid else Step()
             s.order = x.get('order', idx)
@@ -117,7 +118,7 @@ def save_recipe(request):
                 iuid = _id.get('ingredient_usage_id')
                 if _id.get('deleted'):
                     if iuid:
-                        IngredientUsage.objects.delete(id=iuid)
+                        IngredientUsage.objects.get(id=iuid).delete()
                 else:
                     i = Ingredient.objects.get(id=_id['id']) if 'id' in _id else Ingredient()
                     i.name = _id.get('name')

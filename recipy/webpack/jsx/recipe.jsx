@@ -88,7 +88,6 @@ const style = {
 	padding: 10,
 	boxSizing: 'border-box',
 	width: 'calc(100% - 300px)',
-		position: 'relative'
     },
     recipeDetails: {
 	margin: 10,
@@ -108,7 +107,8 @@ const style = {
 	borderRadius: backgroundsBr,
 	width: '100%',
 	display: 'flex',
-	flexFlow: 'column nowrap'
+	flexFlow: 'column nowrap',
+	position: 'relative'
     },
     row: {
 	display: 'flex',
@@ -432,7 +432,7 @@ const RecipeStep = ({step}) => {
 	const deleteStep = () => {
 		store.deleteStep({step});
 	};
-	return <div className="recipe-step" style={style.recipeStep}>
+	return <div className="recipe-step" style={{...style.recipeStep, position: 'relative'}}>
 		<div style={{...style.row, justifyContent: 'space-between', marginBottom: 10}}>
 			{step.process && <Process process={step.process} />}
                         {!step.process &&
@@ -444,7 +444,7 @@ const RecipeStep = ({step}) => {
 			<Ingredients ingredients={step.ingredients} step={step} />
 			<EquipmentList equipment={step.equipment} step={step} />
 		</div>
-		{isEdit && <Button style={{background: 'black', color: 'white', fontSize: undefined, borderRadius: '100%', position: 'absolute', left: 'calc(100% - 22px)', top: 35, padding: 5}} onClick={deleteStep}>X</Button>}
+		{isEdit && <Button style={{background: 'black', color: 'white', fontSize: undefined, borderRadius: '100%', position: 'absolute', left: 'calc(100% - 11px)', top: -11, padding: 5}} onClick={deleteStep}>X</Button>}
 	</div>;
 };
 

@@ -6,6 +6,7 @@ import {StrictMode} from 'react';
 import {Provider, useSelector} from 'react-redux';
 import easyRedux from './util/easyRedux';
 import Modal from './components/Modal';
+import NavBar from './navbar';
 
 let recipe = JSON.parse(window._json);
 
@@ -25,11 +26,36 @@ let store = easyRedux(recipe, {
         steps[idx] = {...steps[idx], equipment: [...steps[idx].equipment, equipment]}
         return {...state, steps};
     },
+    deleteEquipment: (state, {step, equipment}) => {
+        let steps = [...state.steps];
+        const stepIdx = state.steps.indexOf(step);
+        let e = steps[stepIdx].equipment;
+        e[e.indexOf(equipment)] = {...equipment, deleted: true};
+	return {...state, steps};
+    },
     addIngredient: (state, {step, ingredient}) => {
         let idx = state.steps.indexOf(step);
         let steps = [...state.steps];
         steps[idx] = {...steps[idx], ingredients: [...steps[idx].ingredients, ingredient]}
         return {...state, steps};
+    },
+    updateIngredient: (state, {step, oldIngredient, newIngredient}) => {
+        let steps = [...state.steps];
+        const stepIdx = state.steps.indexOf(step);
+        let ingredients = steps[stepIdx].ingredients;
+        const ingredientIdx = ingredients.indexOf(oldIngredient);
+        ingredients[ingredientIdx] = newIngredient;
+        steps[stepIdx].ingredients = ingredients;
+	return {...state, steps};
+    },
+    deleteIngredient: (state, {step, ingredient}) => {
+        let steps = [...state.steps];
+        const stepIdx = state.steps.indexOf(step);
+        let ingredients = steps[stepIdx].ingredients;
+        const ingredientIdx = ingredients.indexOf(ingredient);
+        ingredients[ingredientIdx] = {...ingredient, deleted: true};
+        steps[stepIdx].ingredients = ingredients;
+	return {...state, steps};
     },
     setProcess: (state, {step, process}) => {
         let idx = state.steps.indexOf(step);
@@ -45,9 +71,14 @@ let store = easyRedux(recipe, {
     },
     addStep: (state, {}) => {
         return {...state, steps: [...state.steps, {ingredients: [], equipment: []}]};
+    },
+    deleteStep: (state, {step}) => {
+	return {...state, steps: state.steps.map(s => s === step ? {...s, deleted: true} : s)}
     }
 });
 
+const backgroundsColor = '#EEE';
+const backgroundsBr = 3;
 const style = {
     recipe: {
 	display: 'flex'
@@ -57,13 +88,14 @@ const style = {
 	padding: 10,
 	boxSizing: 'border-box',
 	width: 'calc(100% - 300px)',
+		position: 'relative'
     },
     recipeDetails: {
 	margin: 10,
 	padding: 10,
 	boxSizing: 'border-box',
-	background: 'lightgray',
-	borderRadius: 5,
+	background: backgroundsColor,
+	borderRadius: backgroundsBr,
 	width: 300,
 	display: 'flex',
 	flexFlow: 'column nowrap'
@@ -72,8 +104,8 @@ const style = {
 	margin: '10px 0',
 	padding: 10,
 	boxSizing: 'border-box',
-	background: 'lightgray',
-	borderRadius: 5,
+	background: backgroundsColor,
+	borderRadius: backgroundsBr,
 	width: '100%',
 	display: 'flex',
 	flexFlow: 'column nowrap'
@@ -82,25 +114,50 @@ const style = {
 	display: 'flex',
 	flexFlow: 'row nowrap'
 	},
-    process: {
-	fontSize: '1.5rem'
-    },
-    time: {
+	process: {
+		fontSize: '1.5rem'
+	},
+	time: {
 		fontSize: '1.5rem'
 	},
 	equipmentList: {
 
 	},
 	ingredient: {
-
+		margin: '7.5px 0',
+		marginRight: 7.5,
+		cursor: 'pointer'
 	},
 	equipment: {
 		width: '50%'
 	},
         ingredients: {
 		width: '50%'
-	}
+	},
 };
+
+const Button = ({className, style, ...props}) => {
+	return <button {...props} className={'recipy-button ' + className} style={{cursor: 'pointer', fontSize: '2rem', border: 'none', background: 'none', ...style}} />;
+};
+
+// Because some CSS is easier old school...
+const CSS = `
+.recipe-step__ingredients__ingredient:hover {
+	color: gray;
+}
+
+.recipy-button:hover {
+	color: gray;
+}
+
+select {
+	cursor: pointer;
+}
+
+.ingredient-picker > *:not(:last-child) {
+	margin-right: 10px;
+}
+`;
 
 const HUMAN_UNITS = [
 	'',
@@ -115,11 +172,7 @@ const HUMAN_UNITS = [
 const useEditable = () => {
     const currentUser = useSelector(s => s.currentUser);
     const owner = useSelector(s => s.owner);
-    let isEditable = currentUser && currentUser.id === owner.id;
-    if (window.location.search.includes('foo')) {
-        isEditable = true;
-    }
-    return isEditable;
+    return currentUser && currentUser.id === owner.id;
 };
 
 const SearchBox = ({endpoint, onSelect, display, placeholder="Begin typing..."}) => {
@@ -137,9 +190,9 @@ const SearchBox = ({endpoint, onSelect, display, placeholder="Begin typing..."})
         <input style={{width: 200}} placeholder={placeholder} onChange={e => {
              setS(e.target.value);
         }} value={s} />
-        <div ref={ref} style={{position: 'absolute', background: 'white', display: 'flex', flexFlow: 'column nowrap', width: 200}}>
+        {s.length > 0 && <div ref={ref} style={{position: 'absolute', background: 'white', display: 'flex', flexFlow: 'column nowrap', width: 200, border: '1px solid black', borderTop: 'none'}}>
             {data.map((x, idx) => <div style={{padding: 10, cursor: 'pointer'}} key={idx} onClick={() => onSelect(x)}>{display(x)}</div>)}
-        </div>
+        </div>}
     </div>;
 };
 
@@ -208,7 +261,9 @@ const Process = ({process, step}) => {
 			{process.name}
 		</span>
 		{modalVisible && <Modal onClose={() => setMV(false)}>
+			<div style={{padding: 20, background: 'white', borderRadius: backgroundsBr}}>
 			<SearchBox endpoint='process' display={x => x.name} onSelect={onSelect}/>
+			</div>
 		</Modal>}
 	</>;
 };
@@ -220,7 +275,7 @@ const Time = ({step, time}) => {
 
 	if (!isEditable) {
 		return <div className="recipe-step__time" style={style.time}>
-			{entries.map(([k, v]) => !v ? null : <span key={k}>{v} {k}</span>)}
+			{entries.map(([k, v]) => !v ? null : <span key={k}>{v} {v === 1 ? k.slice(0, -1) : k}</span>)}
 		</div>;
 	}
         
@@ -237,7 +292,7 @@ const Time = ({step, time}) => {
         }
 
 	return <div style={style.time}>
-		<input value={scalar ? scalar : ''} onChange={onScalarChange} />
+		<input value={scalar ? scalar : ''} onChange={onScalarChange} style={{marginRight: 7.5}} />
 		<select onChange={onUnitsChange}>
 			<option value='seconds'>Seconds</option>
 			<option value='minutes'>Minutes</option>
@@ -246,16 +301,30 @@ const Time = ({step, time}) => {
 	</div>;
 };
 
-const Ingredient = ({ingredient}) => {
+const Ingredient = ({ingredient, step}) => {
+	const [modalVisible, setModalVisible] = useState(false);
+        const onComplete = x => {
+		store.updateIngredient({step, oldIngredient: ingredient, newIngredient: x});
+		setModalVisible(false);
+        };
+
+	const deleteIng = () => {
+		store.deleteIngredient({step, ingredient});
+	};
+
 	return <div className="recipe-step__ingredients__ingredient" style={style.ingredient}>
-		<span>{ingredient.amount.value}{HUMAN_UNITS[ingredient.amount.units]} {ingredient.name}</span>
+		<span onClick={() => setModalVisible(true)}>{ingredient.amount.value}{HUMAN_UNITS[ingredient.amount.units]} {ingredient.name}</span>
+		{modalVisible && <Modal onClose={() => setModalVisible(false)}>
+			<IngredientPicker onComplete={onComplete} saveText="Update" ingredient={ingredient} amount={ingredient.amount.value} units={ingredient.amount.units} />
+		</Modal>}
+		<Button style={{color: 'red', fontSize: undefined}} onClick={deleteIng}>X</Button>
 	</div>;
 };
 
-const IngredientPicker = ({onComplete}) => {
-        const [ing, setIng] = useState(null);
-	const [amount, setAmount] = useState(0);
-        const [units, setUnits] = useState(null);
+const IngredientPicker = ({saveText='Add', ingredient:_ingredient=null, amount:_amount=0, units:_units=1, onComplete}) => {
+        const [ing, setIng] = useState(_ingredient);
+	const [amount, setAmount] = useState(_amount);
+        const [units, setUnits] = useState(_units);
 
 	const onSelect = v => {
 		setIng(v);
@@ -271,21 +340,27 @@ const IngredientPicker = ({onComplete}) => {
 		onComplete({...ing, amount: {units, value: amount}});
         };
 
-        const setUnitsF = e => setUnits(parseInt(e.target.value));
+        const setUnitsF = e => {
+		return setUnits(parseInt(e.target.value));
+	}
 
-	return <div>
+        const UNITS = Object.entries({
+		"1": "Grams",
+		"2": "Kilograms",
+		"3": "Milliliters",
+		"4": "Liters",
+		"5": "Pinches",
+		"6": "Unitless"
+        });
+
+	return <div class="ingredient-picker" style={{padding: 20, background: 'white', borderRadius: backgroundsBr, display: 'flex', alignItems: 'center'}}>
 		<input value={amount} onChange={valueChange}/>
-		<select onSelect={setUnitsF}>
-			<option value="1">Grams</option>
-			<option value="2">Kilograms</option>
-			<option value="3">Milliliters</option>
-			<option value="4">Liters</option>
-			<option value="5">Pinches</option>
-			<option value="6">Unitless</option>
+		<select onChange={setUnitsF}>
+			{UNITS.map(([value, label], idx) => <option key={idx} value={value} selected={`${units}` === value}>{label}</option>)}
 		</select>
 		{!ing && <SearchBox endpoint='ingredient' display={x => x.name} onSelect={onSelect} />}
-		{ing && <button onClick={() => setIng(null)}>{ing.name}</button>}
-		<button onClick={btnClick}>add</button>
+		{ing && <Button style={{border: '1px solid black', borderRadius: backgroundsBr}} onClick={() => setIng(null)}>{ing.name}</Button>}
+		<Button onClick={btnClick}>{saveText}</Button>
 	</div>
 };
 
@@ -299,18 +374,23 @@ const Ingredients = ({step, ingredients}) => {
         };
 
 	return <div className="recipe-step__ingredients" style={style.ingredients}>
-		<h3 style={{marginBottom: 5}}>Ingredients</h3>
-		{ingredients.map((x, i) => <Ingredient key={i} ingredient={x} />)}
+		<h3 style={{marginBottom: 5, fontWeight: 'bold'}}>Ingredients</h3>
+		{ingredients.filter(x => !x.deleted).map((x, i) => <Ingredient key={i} ingredient={x} step={step} />)}
                 {modalVisible && <Modal onClose={() => setModalVisible(false)}>
 			<IngredientPicker onComplete={onComplete} />
 		</Modal>}
-		{isEditable && <button onClick={() => setModalVisible(true)}>+</button>}
+		{isEditable && <Button onClick={() => setModalVisible(true)}>+</Button>}
 	</div>;
 };
 
-const Equipment = ({equipment:{maker, name, kind}}) => {
+const Equipment = ({equipment, step}) => {
+	const {maker, name, kind} = equipment;
+	const deleteEquip = () => {
+		store.deleteEquipment({step, equipment});
+	};
 	return <div className="recipe-step__equipment-list__equipment" style={{}}>
 		<span>{kind} <strong style={{fontWeight: 'bold'}}>{name}</strong> from {maker}</span>
+		<Button style={{color: 'red', fontSize: undefined}} onClick={deleteEquip}>X</Button>
 	</div>;
 };
 
@@ -324,43 +404,72 @@ const EquipmentList = ({equipment, step}) => {
 	};
 
 	return <div className="recipe-step__equipment-list" style={style.equipmentList}>
-		<h3 style={{marginBottom: 5}}>Equipment</h3>
-		{equipment.map((x, i) => <Equipment equipment={x} key={i} />)}
-		{isEditable && <button onClick={e => setSV(true)}>+</button>}
-                {searchVisible && <Modal onClose={e => setSV(false)}><SearchBox endpoint='equipment' display={x => x.name} onSelect={onSelect} /></Modal>}
+		<h3 style={{marginBottom: 5, fontWeight: 'bold'}}>Equipment</h3>
+		{equipment.filter(x => !x.deleted).map((x, i) => <Equipment equipment={x} key={i} step={step} />)}
+		{isEditable && <Button onClick={e => setSV(true)}>+</Button>}
+                {searchVisible && <Modal onClose={e => setSV(false)}>
+			<div style={{padding: 20, background: 'white', borderRadius: backgroundsBr}}>
+				<SearchBox endpoint='equipment' display={x => x.name} onSelect={onSelect} />
+			</div>
+		</Modal>}
 	</div>;
 }
 
 const RecipeStep = ({step}) => {
 	const [showingProcessModal, setSPM] = useState(false);
+
+	const deleteStep = () => {
+		store.deleteStep({step});
+	};
 	return <div className="recipe-step" style={style.recipeStep}>
 		<div style={{...style.row, justifyContent: 'space-between', marginBottom: 10}}>
 			{step.process && <Process process={step.process} />}
-                        {!step.process && <SearchBox endpoint='process' display={x => x.name} onSelect={x => store.setProcess({step, process: x})}/>}
+                        {!step.process &&
+				<SearchBox endpoint='process' display={x => x.name} onSelect={x => store.setProcess({step, process: x})}/>
+			}
 			<Time step={step} time={step.time} />
 		</div>
 		<div style={style.row}>
 			<Ingredients ingredients={step.ingredients} step={step} />
 			<EquipmentList equipment={step.equipment} step={step} />
 		</div>
+		<Button style={{background: 'black', color: 'white', fontSize: undefined, borderRadius: '100%', position: 'absolute', left: 'calc(100% - 22px)', top: 35, padding: 5}} onClick={deleteStep}>X</Button>
 	</div>;
 };
 
 const RecipeSteps = ({}) => {
     const isEditable = useEditable();
     const steps = useSelector(s => s.steps);
+
+    const save = () => {
+        let json = store.getState();
+        fetch('/json/save/recipe/', {
+            method: 'POST',
+            'Content-Type': 'application/json',
+            body: JSON.stringify(json)
+        }).then(x => x.json()).then(({recipe_id}) => { window.location.pathname = `/recipe/${recipe_id}/`; });
+    };
+
     return <div className="recipe-steps" style={style.recipeSteps}>
-	<h3 style={{fontSize: '1.5rem'}}>Steps</h3>
-	{steps.map((x, i) => <RecipeStep key={i} step={x} />)}
-        {isEditable && <button onClick={e => store.addStep()}>+</button>}
+	<div style={{display: 'flex', justifyContent: 'space-between'}}>
+		<h3 style={{fontSize: '1.5rem'}}>Steps</h3>
+		{isEditable && <Button onClick={save}><svg style={{width: 22, height: 22}} fill="currentColor" viewBox="0 0 448 512"><path d="M433.1 129.1l-83.9-83.9C342.3 38.32 327.1 32 316.1 32H64C28.65 32 0 60.65 0 96v320c0 35.35 28.65 64 64 64h320c35.35 0 64-28.65 64-64V163.9C448 152.9 441.7 137.7 433.1 129.1zM224 416c-35.34 0-64-28.66-64-64s28.66-64 64-64s64 28.66 64 64S259.3 416 224 416zM320 208C320 216.8 312.8 224 304 224h-224C71.16 224 64 216.8 64 208v-96C64 103.2 71.16 96 80 96h224C312.8 96 320 103.2 320 112V208z"/></svg></Button>}
+	</div>
+	<div style={{display: 'flex', flexFlow: 'column nowrap', alignItems: 'center'}}>
+     	    {steps.filter(x => !x.deleted).map((x, i) => <RecipeStep key={i} step={x} />)}
+            {isEditable && <Button onClick={e => store.addStep()}>+</Button>}
+        </div>
     </div>;
 };
 
 const Recipe = ({}) => {
-    return <div className="recipe" style={style.recipe}>
-        <RecipeDetails />
-        <RecipeSteps />
-    </div>;
+    const loggedIn = useSelector(s => Boolean(s.currentUser));
+    return <NavBar loggedIn={loggedIn}>
+		<div className="recipe" style={style.recipe}>
+			<RecipeDetails />
+			<RecipeSteps />
+		</div>
+	</NavBar>;
 };
 
 ReactDOM.render(
@@ -394,6 +503,7 @@ ReactDOM.render(
 }
 
 `}
+{CSS}
 	</style>
 	<Provider store={store}>
             <Recipe />

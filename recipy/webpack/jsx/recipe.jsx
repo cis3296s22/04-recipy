@@ -26,11 +26,30 @@ let store = easyRedux(recipe, {
         steps[idx] = {...steps[idx], equipment: [...steps[idx].equipment, equipment]}
         return {...state, steps};
     },
+    deleteEquipment: (state, {step, equipment}) => {
+        let steps = [...state.steps];
+        const stepIdx = state.steps.indexOf(step);
+        let e = steps[stepIdx].equipment;
+        e[e.indexOf(equipment)] = {...equipment, deleted: true};
+	return {...state, steps};
+    },
     addIngredient: (state, {step, ingredient}) => {
         let idx = state.steps.indexOf(step);
         let steps = [...state.steps];
         steps[idx] = {...steps[idx], ingredients: [...steps[idx].ingredients, ingredient]}
         return {...state, steps};
+    },
+    updateIngredient: (state, {step, oldIngredient, newIngredient}) => {
+        let steps = [...state.steps];
+        const stepIdx = state.steps.indexOf(step);
+        let ingredients = steps[stepIdx].ingredients;
+        const ingredientIdx = ingredients.indexOf(oldIngredient);
+        ingredients[ingredientIdx] = newIngredient;
+        steps[stepIdx].ingredients = ingredients;
+	return {...state, steps};
+    },
+    deleteIngredient: (state, {step, ingredient}) => {
+        state.updateIngredient({step, oldIngredient: ingredient, newIngredient: {...ingredient, deleted: true}});
     },
     setProcess: (state, {step, process}) => {
         let idx = state.steps.indexOf(step);
@@ -49,6 +68,8 @@ let store = easyRedux(recipe, {
     }
 });
 
+const backgroundsColor = '#EEE';
+const backgroundsBr = 3;
 const style = {
     recipe: {
 	display: 'flex'
@@ -63,8 +84,8 @@ const style = {
 	margin: 10,
 	padding: 10,
 	boxSizing: 'border-box',
-	background: 'lightgray',
-	borderRadius: 5,
+	background: backgroundsColor,
+	borderRadius: backgroundsBr,
 	width: 300,
 	display: 'flex',
 	flexFlow: 'column nowrap'
@@ -73,8 +94,8 @@ const style = {
 	margin: '10px 0',
 	padding: 10,
 	boxSizing: 'border-box',
-	background: 'lightgray',
-	borderRadius: 5,
+	background: backgroundsColor,
+	borderRadius: backgroundsBr,
 	width: '100%',
 	display: 'flex',
 	flexFlow: 'column nowrap'
@@ -83,25 +104,40 @@ const style = {
 	display: 'flex',
 	flexFlow: 'row nowrap'
 	},
-    process: {
-	fontSize: '1.5rem'
-    },
-    time: {
+	process: {
+		fontSize: '1.5rem'
+	},
+	time: {
 		fontSize: '1.5rem'
 	},
 	equipmentList: {
 
 	},
 	ingredient: {
-
+		margin: '7.5px 0',
+		marginRight: 7.5,
+		cursor: 'pointer'
 	},
 	equipment: {
 		width: '50%'
 	},
         ingredients: {
 		width: '50%'
-	}
+	},
+plusButton: {
+	cursor: 'pointer',
+	fontSize: '2rem',
+	background: 'none',
+	border: 'none'
+}
 };
+
+// Because some CSS is easier old school...
+const CSS = `
+.recipe-step__ingredients__ingredient:hover {
+	color: gray;
+}
+`;
 
 const HUMAN_UNITS = [
 	'',
@@ -243,16 +279,24 @@ const Time = ({step, time}) => {
 	</div>;
 };
 
-const Ingredient = ({ingredient}) => {
+const Ingredient = ({ingredient, step}) => {
+	const [modalVisible, setModalVisible] = useState(false);
+        const onComplete = x => {
+		store.updateIngredient({step, oldIngredient: ingredient, newIngredient: x});
+		setModalVisible(false);
+        };
 	return <div className="recipe-step__ingredients__ingredient" style={style.ingredient}>
-		<span>{ingredient.amount.value}{HUMAN_UNITS[ingredient.amount.units]} {ingredient.name}</span>
+		<span onClick={() => setModalVisible(true)}>{ingredient.amount.value}{HUMAN_UNITS[ingredient.amount.units]} {ingredient.name}</span>
+		{modalVisible && <Modal onClose={() => setModalVisible(false)}>
+			<IngredientPicker onComplete={onComplete} saveText="Update" ingredient={ingredient} amount={ingredient.amount.value} units={ingredient.amount.units} />
+		</Modal>}
 	</div>;
 };
 
-const IngredientPicker = ({onComplete}) => {
-        const [ing, setIng] = useState(null);
-	const [amount, setAmount] = useState(0);
-        const [units, setUnits] = useState(null);
+const IngredientPicker = ({saveText='Add', ingredient:_ingredient=null, amount:_amount=0, units:_units=1, onComplete}) => {
+        const [ing, setIng] = useState(_ingredient);
+	const [amount, setAmount] = useState(_amount);
+        const [units, setUnits] = useState(_units);
 
 	const onSelect = v => {
 		setIng(v);
@@ -272,19 +316,23 @@ const IngredientPicker = ({onComplete}) => {
 		return setUnits(parseInt(e.target.value));
 	}
 
+        const UNITS = Object.entries({
+		"1": "Grams",
+		"2": "Kilograms",
+		"3": "Milliliters",
+		"4": "Liters",
+		"5": "Pinches",
+		"6": "Unitless"
+        });
+
 	return <div>
 		<input value={amount} onChange={valueChange}/>
 		<select onChange={setUnitsF}>
-			<option value="1">Grams</option>
-			<option value="2">Kilograms</option>
-			<option value="3">Milliliters</option>
-			<option value="4">Liters</option>
-			<option value="5">Pinches</option>
-			<option value="6">Unitless</option>
+			{UNITS.map(([value, label], idx) => <option key={idx} value={value} selected={`${units}` === value}>{label}</option>)}
 		</select>
 		{!ing && <SearchBox endpoint='ingredient' display={x => x.name} onSelect={onSelect} />}
 		{ing && <button onClick={() => setIng(null)}>{ing.name}</button>}
-		<button onClick={btnClick}>add</button>
+		<button onClick={btnClick}>{saveText}</button>
 	</div>
 };
 
@@ -298,12 +346,12 @@ const Ingredients = ({step, ingredients}) => {
         };
 
 	return <div className="recipe-step__ingredients" style={style.ingredients}>
-		<h3 style={{marginBottom: 5}}>Ingredients</h3>
-		{ingredients.map((x, i) => <Ingredient key={i} ingredient={x} />)}
+		<h3 style={{marginBottom: 5, fontWeight: 'bold'}}>Ingredients</h3>
+		{ingredients.map((x, i) => <Ingredient key={i} ingredient={x} step={step} />)}
                 {modalVisible && <Modal onClose={() => setModalVisible(false)}>
 			<IngredientPicker onComplete={onComplete} />
 		</Modal>}
-		{isEditable && <button onClick={() => setModalVisible(true)}>+</button>}
+		{isEditable && <button style={style.plusButton} onClick={() => setModalVisible(true)}>+</button>}
 	</div>;
 };
 
@@ -323,9 +371,9 @@ const EquipmentList = ({equipment, step}) => {
 	};
 
 	return <div className="recipe-step__equipment-list" style={style.equipmentList}>
-		<h3 style={{marginBottom: 5}}>Equipment</h3>
+		<h3 style={{marginBottom: 5, fontWeight: 'bold'}}>Equipment</h3>
 		{equipment.map((x, i) => <Equipment equipment={x} key={i} />)}
-		{isEditable && <button onClick={e => setSV(true)}>+</button>}
+		{isEditable && <button style={style.plusButton} onClick={e => setSV(true)}>+</button>}
                 {searchVisible && <Modal onClose={e => setSV(false)}><SearchBox endpoint='equipment' display={x => x.name} onSelect={onSelect} /></Modal>}
 	</div>;
 }
@@ -355,15 +403,18 @@ const RecipeSteps = ({}) => {
             method: 'POST',
             'Content-Type': 'application/json',
             body: JSON.stringify(json)
-        }).then(console.log);
-    }
+        }).then(x => x.json()).then(({recipe_id}) => { window.location.pathname = `/recipe/${recipe_id}/`; });
+    };
+
     return <div className="recipe-steps" style={style.recipeSteps}>
 	<div>
 		<h3 style={{fontSize: '1.5rem'}}>Steps</h3>
 		{isEditable && <button onClick={save}>Save</button>}
 	</div>
-	{steps.map((x, i) => <RecipeStep key={i} step={x} />)}
-        {isEditable && <button onClick={e => store.addStep()}>+</button>}
+	<div style={{display: 'flex', flexFlow: 'column nowrap', alignItems: 'center'}}>
+     	    {steps.map((x, i) => <RecipeStep key={i} step={x} />)}
+            {isEditable && <button style={style.plusButton} onClick={e => store.addStep()}>+</button>}
+        </div>
     </div>;
 };
 
@@ -408,6 +459,7 @@ ReactDOM.render(
 }
 
 `}
+{CSS}
 	</style>
 	<Provider store={store}>
             <Recipe />

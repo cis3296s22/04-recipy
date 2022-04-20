@@ -73,14 +73,14 @@ def save_recipe(request):
         r.owner = request.user
         r.save()
 
-        for x in d.get('steps'):
+        for (idx, x) in enumerate(d.get('steps')):
             sid = x.get('id')
             if x.get('deleted', False):
                 if sid:
                     Step.objects.delete(id=sid)
                 continue
             s = Step.objects.get(id=sid) if sid else Step()
-            s.order = x.get('order')
+            s.order = x.get('order', idx)
             s.recipe = r
             s.time = timedelta(**x.get('time', {}))
 
@@ -133,7 +133,7 @@ def save_recipe(request):
                     iu.step = s
                     iu.save()
 
-        return JsonResponse({'status': 'ok', 'recipe': r.to_json()})
+        return JsonResponse({'status': 'ok', 'recipe_id': r.id})
     return HttpResponse('Error')
 
 def user(request, user_id=None):

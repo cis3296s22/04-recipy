@@ -83,12 +83,9 @@ const Navbar = ({children, loggedIn: _loggedIn}) => {
             <nav className="navbar">
                 <a href="/" className="nav-logo" onClick={redirect}>Reci.py</a>
                 <ul className={isActive ? "nav-menu active" : "nav-menu"}>
-                    <li className="nav-item">
-                        <a href="/" className="nav-link" onClick={redirect}>Home</a>
-                    </li>
                     {loggedIn && <>
                     <li className="nav-item">
-                        <a href="/recipe/new" className="nav-link">Create</a>
+                        <a href="/recipe/new" className="nav-link">New Recipe</a>
                     </li>
                     <li className="nav-item">
                         <a href="/profile" className="nav-link">Profile</a>

@@ -11,13 +11,16 @@ urlpatterns = [
     path('recipe/new/', views.new_recipe),
     path('recipe/<int:recipe_id>/', views.view_recipe),
     path('accounts/', include('django.contrib.auth.urls')),
+    path('accounts/register/', views.register),
 
     path('json/search/process/', views.search_process),
     path('json/search/ingredient/', views.search_ingredient),
     path('json/search/equipment/', views.search_equipment),
+
     path('json/save/recipe/', views.save_recipe),
     path('user/<int:user_id>/', views.user),
-
+    path('users/<int:user_id>', views.user),
+  
     *static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 ]
 

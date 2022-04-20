@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Register{% endblock %}
+
+{% block content %}
+    <div id='root'></div>
+    <script type='application/javascript'>
+        window._json = '{{ json|safe|escapejs }}';
+    </script>
+{% endblock %}
+
+{% block scripts %}
+    <script src="{% static 'recipy/register.js' %}"></script>
+{% endblock %}

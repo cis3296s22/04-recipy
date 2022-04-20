@@ -70,7 +70,7 @@ const Navbar = ({children, loggedIn: _loggedIn}) => {
 
     const toggleClass = () => {
         setActive(!isActive);
-    };    
+    }
 
     const redirect = () => {
         let url = new URL(window.location.href);

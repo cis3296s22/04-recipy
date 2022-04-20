@@ -313,7 +313,7 @@ const Home = () => {
     const [toggle, setToggle] = useState(true);
     const toggleSelection = () => setToggle(toggle => !toggle);
     return (
-        <Navbar authenticated={(user_id !== null)} user_id={user_id}>
+        <Navbar loggedIn={(user_id !== null)} user_id={user_id}>
             <div style={selectionStyle.container}>
                 <button style={selectionStyle.btn} onClick={toggleSelection}>
                     <div style={(toggle ? selectionStyle.activeLeft : selectionStyle.activeRight)}>

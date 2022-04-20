@@ -98,6 +98,9 @@ const Navbar = ({children, loggedIn: _loggedIn}) => {
                     <li className="nav-item">
                         <a href="/accounts/login/" className="nav-link">Log In</a>
                     </li>
+                    <li className="nav-item">
+                        <a href="/accounts/register/" className="nav-link">Sign Up</a>
+                    </li>
                      </>}
                 </ul>
                 <div className={isActive ? "hamburger active" : "hamburger"} onClick={toggleClass}>

@@ -74,44 +74,64 @@ def save_recipe(request):
         r.save()
 
         for x in d.get('steps'):
-            s = Step.objects.get(id=x['id']) if 'id' in x else Step()
+            sid = x.get('id')
+            if x.get('deleted', False):
+                if sid:
+                    Step.objects.delete(id=sid)
+                continue
+            s = Step.objects.get(id=sid) if sid else Step()
             s.order = x.get('order')
             s.recipe = r
             s.time = timedelta(**x.get('time', {}))
 
             if 'process' in x:
                 _x = x['process']
-                p = Process.objects.get(id=_x['id']) if 'id' in _x else Process()
-                p.name = _x.get('name')
-                p.description = _x.get('description')
-                p.save()
-                s.process = p
+                pid = _x.get('id')
+                
+                if _x.get('deleted'):
+                    s.process = null
+                else:
+                    p = Process.objects.get(id=pid) if pid else Process()
+                    p.name = _x.get('name')
+                    p.description = _x.get('description')
+                    p.save()
+                    s.process = p
             s.save()
 
             for ed in x.get('equipment', []):
-                print(ed)
-                e = Equipment.objects.get(id=ed.get('id')) if 'id' in ed else Equipment()
-                e.name = ed.get('name')
-                e.maker = ed.get('maker')
-                e.kind = ed.get('kind')
-                e.save()
-                s.equipment.add(e)
+                eid = ed.get('id')
+                if ed.get('deleted'):
+                    if eid:
+                        e = Equipment.objects.get(id=eid)
+                        s.equipment.remove(e)
+                else:
+                    e = Equipment.objects.get(id=eid) if eid else Equipment()
+                    e.name = ed.get('name')
+                    e.maker = ed.get('maker')
+                    e.kind = ed.get('kind')
+                    e.save()
+                    s.equipment.add(e)
             s.save()    
 
             for _id in x.get('ingredients', []):
-                i = Ingredient.objects.get(id=_id['id']) if 'id' in _id else Ingredient()
-                i.name = _id.get('name')
-                i.calories = _id.get('calories')
-                i.serving_size = _id.get('serving_size', {}).get('value')
-                i.serving_size_units = _id.get('serving_size', {}).get('units')
-                i.save()
+                iuid = _id.get('ingredient_usage_id')
+                if _id.get('deleted'):
+                    if iuid:
+                        IngredientUsage.objects.delete(id=iuid)
+                else:
+                    i = Ingredient.objects.get(id=_id['id']) if 'id' in _id else Ingredient()
+                    i.name = _id.get('name')
+                    i.calories = _id.get('calories')
+                    i.serving_size = _id.get('serving_size', {}).get('value')
+                    i.serving_size_units = _id.get('serving_size', {}).get('units')
+                    i.save()
 
-                iu = IngredientUsage.objects.get(id=_id['ingredient_usage_id']) if 'ingredient_usage_id' in _id else IngredientUsage()
-                iu.ingredient = i
-                iu.amount = _id.get('amount', {}).get('value')
-                iu.amount_units = _id.get('amount', {}).get('units')
-                iu.step = s
-                iu.save()
+                    iu = IngredientUsage.objects.get(id=iuid) if iuid else IngredientUsage()
+                    iu.ingredient = i
+                    iu.amount = _id.get('amount', {}).get('value')
+                    iu.amount_units = _id.get('amount', {}).get('units')
+                    iu.step = s
+                    iu.save()
 
         return JsonResponse({'status': 'ok', 'recipe': r.to_json()})
     return HttpResponse('Error')

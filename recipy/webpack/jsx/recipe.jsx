@@ -6,6 +6,7 @@ import {StrictMode} from 'react';
 import {Provider, useSelector} from 'react-redux';
 import easyRedux from './util/easyRedux';
 import Modal from './components/Modal';
+import NavBar from './navbar';
 
 let recipe = JSON.parse(window._json);
 
@@ -367,10 +368,13 @@ const RecipeSteps = ({}) => {
 };
 
 const Recipe = ({}) => {
-    return <div className="recipe" style={style.recipe}>
-        <RecipeDetails />
-        <RecipeSteps />
-    </div>;
+    const loggedIn = useSelector(s => Boolean(s.currentUser));
+    return <NavBar loggedIn={loggedIn}>
+		<div className="recipe" style={style.recipe}>
+			<RecipeDetails />
+			<RecipeSteps />
+		</div>
+	</NavBar>;
 };
 
 ReactDOM.render(

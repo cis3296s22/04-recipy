@@ -63,8 +63,10 @@ const style = {
     }
 };
 
-const Navbar = (props) => {
+const Navbar = ({children, loggedIn: _loggedIn}) => {
     const [isActive, setActive] = useState(false);
+
+    const loggedIn = _loggedIn && _loggedIn !== 'false';
 
     const toggleClass = () => {
         setActive(!isActive);
@@ -76,7 +78,7 @@ const Navbar = (props) => {
         params.delete('search');
     }
 
-    let loggedIn = <div>
+    return <>
         <header className={isActive ? "header header-active" : "header"}>
             <nav className="navbar">
                 <a href="/" className="nav-logo" onClick={redirect}>Reci.py</a>
@@ -84,15 +86,22 @@ const Navbar = (props) => {
                     <li className="nav-item">
                         <a href="/" className="nav-link" onClick={redirect}>Home</a>
                     </li>
+                    {loggedIn && <>
                     <li className="nav-item">
-                        <a href="" className="nav-link">Create</a>
+                        <a href="/recipe/new" className="nav-link">Create</a>
                     </li>
                     <li className="nav-item">
-                        <a href="" className="nav-link">Profile</a>
+                        <a href="/profile" className="nav-link">Profile</a>
                     </li>
                     <li className="nav-item">
-                        <a href="" className="nav-link">Logout</a>
+                        <a href="/accounts/logout/" className="nav-link">Logout</a>
                     </li>
+                    </>}
+                    {!loggedIn && <>
+                    <li className="nav-item">
+                        <a href="/accounts/login/" className="nav-link">Log In</a>
+                    </li>
+                     </>}
                 </ul>
                 <div className={isActive ? "hamburger active" : "hamburger"} onClick={toggleClass}>
                     <span className="bar"></span>
@@ -103,36 +112,9 @@ const Navbar = (props) => {
         </header>
 
         <div className="content">
-            {props.children}
+            {children}
         </div>
-    </div>
-
-    let loggedOut = <div>
-        <header className={isActive ? "header header-active" : "header"}>
-            <nav className="navbar">
-                <a href="" className="nav-logo">Reci.py</a>
-                <ul className={isActive ? "nav-menu active" : "nav-menu"}>
-                    <li className="nav-item">
-                        <a href="/" className="nav-link">Home</a>
-                    </li>
-                    <li className="nav-item">
-                        <a href="" className="nav-link">Log In</a>
-                    </li>
-                </ul>
-                <div className={isActive ? "hamburger active" : "hamburger"} onClick={toggleClass}>
-                    <span className="bar"></span>
-                    <span className="bar"></span>
-                    <span className="bar"></span>
-                </div>
-            </nav>
-        </header>
-
-        <div className="content">
-            {props.children}
-        </div>
-    </div>
-
-    return (props.loggedIn === "true" ? loggedIn : loggedOut);
+    </>;
 }
 
 export default Navbar;

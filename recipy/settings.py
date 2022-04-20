@@ -1,4 +1,4 @@
-LOGOUT_REDIRECT_URL = 'django.logout_redirect_url'
+LOGOUT_REDIRECT_URL = '/'
 LOGIN_URL = 'login'
 LOGIN_REDIRECT_URL = 'django.login_redirect_url'
 

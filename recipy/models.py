@@ -77,8 +77,6 @@ class Recipe(BaseModel):
                                         height_field='picture_height',
                                         width_field='picture_width')
 
-
-
     def to_json(self):
         d = dict(
             id=self.id,
@@ -100,6 +98,10 @@ class Process(BaseModel):
     name = models.TextField()
     description = models.TextField()
 
+    @classmethod
+    def from_json(cls, j):
+        return Process(name=j.get('name'), description=j.get('description'))
+
     def to_json(self):
         return dict(id=self.id, name=self.name, description=self.description)
 
@@ -120,6 +122,10 @@ class Ingredient(BaseModel):
         default=Units.G,
         null=False
     )
+
+    @classmethod
+    def from_json(cls, j):
+        pass
 
     def to_json(self):
         return dict(
@@ -157,7 +163,7 @@ class IngredientUsage(BaseModel):
         choices=Ingredient.Units.choices,
         default=Ingredient.Units.G
     )
-  
+
     def to_json(self):
         return dict(
             **(self.ingredient.to_json()),

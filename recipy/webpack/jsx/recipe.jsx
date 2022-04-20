@@ -115,11 +115,7 @@ const HUMAN_UNITS = [
 const useEditable = () => {
     const currentUser = useSelector(s => s.currentUser);
     const owner = useSelector(s => s.owner);
-    let isEditable = currentUser && currentUser.id === owner.id;
-    if (window.location.search.includes('foo')) {
-        isEditable = true;
-    }
-    return isEditable;
+    return currentUser && currentUser.id === owner.id;
 };
 
 const SearchBox = ({endpoint, onSelect, display, placeholder="Begin typing..."}) => {
@@ -271,11 +267,13 @@ const IngredientPicker = ({onComplete}) => {
 		onComplete({...ing, amount: {units, value: amount}});
         };
 
-        const setUnitsF = e => setUnits(parseInt(e.target.value));
+        const setUnitsF = e => {
+		return setUnits(parseInt(e.target.value));
+	}
 
 	return <div>
 		<input value={amount} onChange={valueChange}/>
-		<select onSelect={setUnitsF}>
+		<select onChange={setUnitsF}>
 			<option value="1">Grams</option>
 			<option value="2">Kilograms</option>
 			<option value="3">Milliliters</option>
@@ -349,8 +347,20 @@ const RecipeStep = ({step}) => {
 const RecipeSteps = ({}) => {
     const isEditable = useEditable();
     const steps = useSelector(s => s.steps);
+
+    const save = () => {
+        let json = store.getState();
+        fetch('/json/save/recipe/', {
+            method: 'POST',
+            'Content-Type': 'application/json',
+            body: JSON.stringify(json)
+        }).then(console.log);
+    }
     return <div className="recipe-steps" style={style.recipeSteps}>
-	<h3 style={{fontSize: '1.5rem'}}>Steps</h3>
+	<div>
+		<h3 style={{fontSize: '1.5rem'}}>Steps</h3>
+		{isEditable && <button onClick={save}>Save</button>}
+	</div>
 	{steps.map((x, i) => <RecipeStep key={i} step={x} />)}
         {isEditable && <button onClick={e => store.addStep()}>+</button>}
     </div>;

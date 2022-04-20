@@ -88,7 +88,6 @@ const style = {
 	padding: 10,
 	boxSizing: 'border-box',
 	width: 'calc(100% - 300px)',
-		position: 'relative'
     },
     recipeDetails: {
 	margin: 10,
@@ -108,7 +107,8 @@ const style = {
 	borderRadius: backgroundsBr,
 	width: '100%',
 	display: 'flex',
-	flexFlow: 'column nowrap'
+	flexFlow: 'column nowrap',
+	position: 'relative'
     },
     row: {
 	display: 'flex',
@@ -126,7 +126,6 @@ const style = {
 	ingredient: {
 		margin: '7.5px 0',
 		marginRight: 7.5,
-		cursor: 'pointer'
 	},
 	equipment: {
 		width: '50%'
@@ -142,7 +141,11 @@ const Button = ({className, style, ...props}) => {
 
 // Because some CSS is easier old school...
 const CSS = `
-.recipe-step__ingredients__ingredient:hover {
+.recipe-step__ingredients__ingredient.editable {
+	cursor: pointer;
+}
+
+.recipe-step__ingredients__ingredient.editable:hover {
 	color: gray;
 }
 
@@ -302,6 +305,7 @@ const Time = ({step, time}) => {
 };
 
 const Ingredient = ({ingredient, step}) => {
+	const isEdit = useEditable();
 	const [modalVisible, setModalVisible] = useState(false);
         const onComplete = x => {
 		store.updateIngredient({step, oldIngredient: ingredient, newIngredient: x});
@@ -312,12 +316,17 @@ const Ingredient = ({ingredient, step}) => {
 		store.deleteIngredient({step, ingredient});
 	};
 
-	return <div className="recipe-step__ingredients__ingredient" style={style.ingredient}>
-		<span onClick={() => setModalVisible(true)}>{ingredient.amount.value}{HUMAN_UNITS[ingredient.amount.units]} {ingredient.name}</span>
+	let cn = "recipe-step__ingredients__ingredient";
+	if (isEdit) {
+		cn += " editable";
+	}
+
+	return <div className={cn} style={style.ingredient}>
+		<span onClick={isEdit ? () => setModalVisible(true) : undefined}>{ingredient.amount.value}{HUMAN_UNITS[ingredient.amount.units]} {ingredient.name}</span>
 		{modalVisible && <Modal onClose={() => setModalVisible(false)}>
 			<IngredientPicker onComplete={onComplete} saveText="Update" ingredient={ingredient} amount={ingredient.amount.value} units={ingredient.amount.units} />
 		</Modal>}
-		<Button style={{color: 'red', fontSize: undefined}} onClick={deleteIng}>X</Button>
+		{isEdit && <Button style={{color: 'red', fontSize: undefined}} onClick={deleteIng}>X</Button>}
 	</div>;
 };
 
@@ -353,7 +362,7 @@ const IngredientPicker = ({saveText='Add', ingredient:_ingredient=null, amount:_
 		"6": "Unitless"
         });
 
-	return <div class="ingredient-picker" style={{padding: 20, background: 'white', borderRadius: backgroundsBr, display: 'flex', alignItems: 'center'}}>
+	return <div className="ingredient-picker" style={{padding: 20, background: 'white', borderRadius: backgroundsBr, display: 'flex', alignItems: 'center'}}>
 		<input value={amount} onChange={valueChange}/>
 		<select onChange={setUnitsF}>
 			{UNITS.map(([value, label], idx) => <option key={idx} value={value} selected={`${units}` === value}>{label}</option>)}
@@ -384,13 +393,14 @@ const Ingredients = ({step, ingredients}) => {
 };
 
 const Equipment = ({equipment, step}) => {
+	const isEdit = useEditable();
 	const {maker, name, kind} = equipment;
 	const deleteEquip = () => {
 		store.deleteEquipment({step, equipment});
 	};
 	return <div className="recipe-step__equipment-list__equipment" style={{}}>
 		<span>{kind} <strong style={{fontWeight: 'bold'}}>{name}</strong> from {maker}</span>
-		<Button style={{color: 'red', fontSize: undefined}} onClick={deleteEquip}>X</Button>
+		{isEdit && <Button style={{color: 'red', fontSize: undefined}} onClick={deleteEquip}>X</Button>}
 	</div>;
 };
 
@@ -416,12 +426,13 @@ const EquipmentList = ({equipment, step}) => {
 }
 
 const RecipeStep = ({step}) => {
+	const isEdit = useEditable();
 	const [showingProcessModal, setSPM] = useState(false);
 
 	const deleteStep = () => {
 		store.deleteStep({step});
 	};
-	return <div className="recipe-step" style={style.recipeStep}>
+	return <div className="recipe-step" style={{...style.recipeStep, position: 'relative'}}>
 		<div style={{...style.row, justifyContent: 'space-between', marginBottom: 10}}>
 			{step.process && <Process process={step.process} />}
                         {!step.process &&
@@ -433,7 +444,7 @@ const RecipeStep = ({step}) => {
 			<Ingredients ingredients={step.ingredients} step={step} />
 			<EquipmentList equipment={step.equipment} step={step} />
 		</div>
-		<Button style={{background: 'black', color: 'white', fontSize: undefined, borderRadius: '100%', position: 'absolute', left: 'calc(100% - 22px)', top: 35, padding: 5}} onClick={deleteStep}>X</Button>
+		{isEdit && <Button style={{background: 'black', color: 'white', fontSize: undefined, borderRadius: '100%', position: 'absolute', left: 'calc(100% - 11px)', top: -11, padding: 5}} onClick={deleteStep}>X</Button>}
 	</div>;
 };
 

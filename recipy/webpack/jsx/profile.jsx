@@ -53,7 +53,7 @@ const RecipePost = (props) => {
         return (
             
             <div>
-                <Navbar authenticated={(current_user_id !== null)} user_id={current_user_id}/>
+                <Navbar loggedIn={(current_user_id !== null)} user_id={current_user_id}/>
         
                 <div className='parent'>
                 <div className='profile'>
